@@ -14,7 +14,7 @@ class Task1(Node):
     def on_depth(self, data):
         self.send_speed_cmd(self.max_speed, 0)
 
-    def on_pose(self, data):
+    def on_pose2d(self, data):
         pass
 
     def send_speed_cmd(self, speed, steering_angle):
