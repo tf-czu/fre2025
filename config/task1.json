@@ -3,7 +3,7 @@
   "robot": {
     "modules": {
       "app": {
-          "driver": "task1.Task1",
+          "driver": "task1:Task1",
           "in": ["depth", "pose2d"],
           "out": ["desired_steering"],
           "init": {
