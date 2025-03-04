@@ -1,6 +1,8 @@
 """
   FRE2025 - TASK1
 """
+import math
+
 from osgar.node import Node
 
 
