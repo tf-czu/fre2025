@@ -13,8 +13,11 @@ def read_logfile(logfile, stream):
     only_stream = lookup_stream_id(logfile, stream)
     with LogReader(logfile, only_stream_id=only_stream) as log:
         for timestamp, stream_id, data in log:
-            buf = deserialize(data)
-            assert 0, buf
+            depth = deserialize(data)
+            #print(depth.shape)
+            print(timestamp, depth[400//2][640//2])
+            #if timestamp > timedelta(seconds=6):
+                #return
 
 
 def main():
