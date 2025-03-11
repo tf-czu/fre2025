@@ -14,7 +14,8 @@ class Task1(Node):
         self.verbose = False
 
     def on_depth(self, data):
-        dist = data[400//2][640//2]
+        mask = data[400//2][160:480] != 0
+        dist = data[400//2][160:480][mask].min()
         print(self.time, dist)
         if dist == 0:
             return
