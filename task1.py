@@ -14,7 +14,12 @@ class Task1(Node):
         self.verbose = False
 
     def on_depth(self, data):
-        self.send_speed_cmd(self.max_speed, 0)
+        dist = data[400//2][640//2]
+        print(self.time, dist)
+        if 0 < dist <= 330:
+            self.send_speed_cmd(0, 0)
+        else:
+            self.send_speed_cmd(self.max_speed, 0)
 
     def on_pose2d(self, data):
         pass
