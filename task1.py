@@ -16,6 +16,8 @@ class Task1(Node):
     def on_depth(self, data):
         dist = data[400//2][640//2]
         print(self.time, dist)
+        if dist == 0:
+            return
         if 0 < dist <= 330:
             self.send_speed_cmd(0, 0)
         else:
