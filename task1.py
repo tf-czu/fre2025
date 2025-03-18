@@ -33,7 +33,7 @@ class Task1(Node):
         else:
             dist_right = 0
         print(self.time, dist_left, dist, dist_right)
-        if abs(dist_left - dist_right) < 200:
+        if abs(int(dist_left) - int(dist_right)) < 200:
             direction = 0
         else:
             if dist_left < dist_right:
