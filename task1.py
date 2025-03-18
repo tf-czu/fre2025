@@ -15,7 +15,10 @@ class Task1(Node):
 
     def on_depth(self, data):
         mask = data[400//2][160:480] != 0
-        dist = data[400//2][160:480][mask].min()
+        if mask.max():
+            dist = data[400//2][160:480][mask].min()
+        else:
+            dist = 0
         print(self.time, dist)
         if dist == 0:
             return
