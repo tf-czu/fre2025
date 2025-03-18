@@ -34,9 +34,9 @@ class Task1(Node):
             direction = 0
         else:
             if dist_left < dist_right:
-                direction = -10
+                direction = -20
             else:
-                direction = 10
+                direction = 20
         if dist == 0:
             return
         if 0 < dist <= 330:
