@@ -19,13 +19,30 @@ class Task1(Node):
             dist = data[400//2][160:480][mask].min()
         else:
             dist = 0
-        print(self.time, dist)
+        mask = data[400//2][0:160] != 0
+        if mask.max():
+            dist_left = data[400//2][0:160][mask].min()
+        else:
+            dist_left = 0
+        mask = data[400//2][480:640] != 0
+        if mask.max():
+            dist_right = data[400//2][480:640][mask].min()
+        else:
+            dist_right = 0
+        print(self.time, dist_left, dist, dist_right)
+        if abs(dist_left - dist_right) < 200:
+            direction = 0
+        else:
+            if dist_left < dist_right:
+                direction = -10
+            else:
+                direction = 10
         if dist == 0:
             return
         if 0 < dist <= 330:
             self.send_speed_cmd(0, 0)
         else:
-            self.send_speed_cmd(self.max_speed, 0)
+            self.send_speed_cmd(self.max_speed, math.radians(direction))
 
     def on_pose2d(self, data):
         pass
