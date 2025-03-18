@@ -10,7 +10,7 @@ class Task1(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register('desired_steering')
-        self.max_speed = config.get('max_speed', 0.3)
+        self.max_speed = config.get('max_speed', 0.5)
         self.verbose = False
 
     def on_depth(self, data):
