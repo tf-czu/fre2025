@@ -10,7 +10,7 @@ class Task1(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register('desired_steering')
-        self.max_speed = config.get('max_speed', 0.2)
+        self.max_speed = config.get('max_speed', 0.3)
         self.verbose = False
 
     def on_depth(self, data):
@@ -34,9 +34,9 @@ class Task1(Node):
             direction = 0
         else:
             if dist_left < dist_right:
-                direction = -20
+                direction = -30
             else:
-                direction = 20
+                direction = 30
         if dist == 0:
             return
         if 0 < dist <= 330:
