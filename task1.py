@@ -14,8 +14,18 @@ class Task1(Node):
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
         self.debug_arr = []
+        self.navigate_in_row = True
+        self.end_of_row = None
+        self.pose_xy = (0, 0)
 
     def on_depth(self, data):
+        if not self.navigate_in_row:
+            if math.hypot(self.end_of_row[0] - self.pose_xy[0],
+                          self.end_of_row[1] - self.pose_xy[1]) < 1.0:
+                self.send_speed_cmd(self.max_speed, 0)
+            else:
+                self.send_speed_cmd(0, 0)
+            return
         line = 400//2
         line_end = 400//2 + 30
         mask = data[line:line_end, 160:480] != 0
@@ -46,12 +56,15 @@ class Task1(Node):
         if dist == 0:
             return
         if 0 < dist <= 330 or (dist_left > 1000 and dist_right > 1000):
+            if (dist_left > 1000 and dist_right > 1000) and self.time.total_seconds() > 5:
+                self.navigate_in_row = False
+                self.end_of_row = self.pose_xy
             self.send_speed_cmd(0, 0)
         else:
             self.send_speed_cmd(self.max_speed, math.radians(direction))
 
     def on_pose2d(self, data):
-        pass
+        self.pose_xy = data[0]/1000, data[1]/1000
 
     def send_speed_cmd(self, speed, steering_angle):
         return self.bus.publish(
