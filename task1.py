@@ -45,7 +45,7 @@ class Task1(Node):
                 direction = self.turn_angle
         if dist == 0:
             return
-        if 0 < dist <= 330:
+        if 0 < dist <= 330 or (dist_left > 1000 and dist_right > 1000):
             self.send_speed_cmd(0, 0)
         else:
             self.send_speed_cmd(self.max_speed, math.radians(direction))
