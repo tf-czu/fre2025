@@ -13,6 +13,7 @@ class Task1(Node):
         self.max_speed = config.get('max_speed', 0.2)
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
+        self.debug_arr = []
 
     def on_depth(self, data):
         line = 400//2
@@ -33,6 +34,8 @@ class Task1(Node):
         else:
             dist_right = 0
         print(self.time, dist_left, dist, dist_right)
+        if self.verbose:
+            self.debug_arr.append((self.time.total_seconds(), dist_left, dist, dist_right))
         if abs(int(dist_left) - int(dist_right)) < 200:
             direction = 0
         else:
@@ -55,5 +58,20 @@ class Task1(Node):
             'desired_steering',
             [round(speed*1000), round(math.degrees(steering_angle)*100)]
         )
+
+    def draw(self):
+        import matplotlib.pyplot as plt
+
+        for selection in range(3):
+            t = [a[0] for a in self.debug_arr]
+            x = [a[1 + selection] for a in self.debug_arr]
+            line = plt.plot(t, x, '-o', linewidth=2, label=f'{selection + 1}')
+
+        plt.xlabel('time (s)')
+        plt.ylabel('dist')
+        plt.legend()
+        plt.show()
+
+
 
 # vim: expandtab sw=4 ts=4
