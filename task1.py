@@ -4,6 +4,7 @@
 import math
 
 from osgar.node import Node
+from osgar.bus import BusShutdownException
 
 
 class Task1(Node):
@@ -17,15 +18,17 @@ class Task1(Node):
         self.navigate_in_row = True
         self.end_of_row = None
         self.pose_xy = (0, 0)
+        self.depth = None
 
     def on_depth(self, data):
-        if not self.navigate_in_row:
-            if math.hypot(self.end_of_row[0] - self.pose_xy[0],
-                          self.end_of_row[1] - self.pose_xy[1]) < 1.0:
-                self.send_speed_cmd(self.max_speed, 0)
-            else:
-                self.send_speed_cmd(0, 0)
-            return
+        self.depth = data
+
+    def navigate_row_step(self, data):
+        """
+        Navigate single step in the row of maize
+        :param data: depth data
+        :return: True if still in row
+        """
         line = 400//2
         line_end = 400//2 + 30
         mask = data[line:line_end, 160:480] != 0
@@ -43,8 +46,8 @@ class Task1(Node):
             dist_right = data[line:line_end, 480:640][mask].min()
         else:
             dist_right = 0
-        print(self.time, dist_left, dist, dist_right)
         if self.verbose:
+            print(self.time, dist_left, dist, dist_right)
             self.debug_arr.append((self.time.total_seconds(), dist_left, dist, dist_right))
         if abs(int(dist_left) - int(dist_right)) < 200:
             direction = 0
@@ -54,7 +57,7 @@ class Task1(Node):
             else:
                 direction = self.turn_angle
         if dist == 0:
-            return
+            return self.navigate_in_row
         if 0 < dist <= 330 or (dist_left > 1000 and dist_right > 1000):
             if (dist_left > 1000 and dist_right > 1000) and self.time.total_seconds() > 5:
                 self.navigate_in_row = False
@@ -62,6 +65,7 @@ class Task1(Node):
             self.send_speed_cmd(0, 0)
         else:
             self.send_speed_cmd(self.max_speed, math.radians(direction))
+        return self.navigate_in_row
 
     def on_pose2d(self, data):
         self.pose_xy = data[0]/1000, data[1]/1000
@@ -71,6 +75,28 @@ class Task1(Node):
             'desired_steering',
             [round(speed*1000), round(math.degrees(steering_angle)*100)]
         )
+
+    def navigate_row(self):
+        while True:
+            if self.update() == 'depth':
+                if not self.navigate_row_step(self.depth):
+                    break
+
+    def go_straight(self, dist):
+        while True:
+            if self.update() == 'depth':
+                if math.hypot(self.end_of_row[0] - self.pose_xy[0],
+                              self.end_of_row[1] - self.pose_xy[1]) < dist:
+                    self.send_speed_cmd(self.max_speed, 0)
+                else:
+                    self.send_speed_cmd(0, 0)
+
+    def run(self):
+        try:
+            self.navigate_row()
+            self.go_straight(1.0)
+        except BusShutdownException:
+            pass
 
     def draw(self):
         import matplotlib.pyplot as plt
