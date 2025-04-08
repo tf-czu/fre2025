@@ -77,12 +77,14 @@ class Task1(Node):
         )
 
     def navigate_row(self):
+        print(self.time, 'nagitate_row')
         while True:
             if self.update() == 'depth':
                 if not self.navigate_row_step(self.depth):
                     break
 
     def go_straight(self, dist):
+        print(self.time, 'go_straight')
         self.end_of_row = self.pose_xy
         while True:
             if self.update() == 'depth':
@@ -93,6 +95,7 @@ class Task1(Node):
                     self.send_speed_cmd(0, 0)
                     break
     def turn_deg(self, angle):
+        print(self.time, 'turn_deg')
         dist = 0
         prev = self.pose_xy
         while dist < 3.14*0.75/2:
