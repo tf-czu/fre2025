@@ -15,7 +15,6 @@ class Task1(Node):
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
         self.debug_arr = []
-        self.navigate_in_row = True
         self.end_of_row = None
         self.pose_xy = (0, 0)
         self.depth = None
@@ -77,7 +76,8 @@ class Task1(Node):
         )
 
     def navigate_row(self):
-        print(self.time, 'nagitate_row')
+        print(self.time, 'navigate_row')
+        self.navigate_in_row = True
         while True:
             if self.update() == 'depth':
                 if not self.navigate_row_step(self.depth):
