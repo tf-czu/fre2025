@@ -97,7 +97,7 @@ class Task1(Node):
         prev = self.pose_xy
         while dist < 3.14*0.75/2:
             if self.update() == 'pose2d':
-                 self.send_speed_cmd(self.max_speed, math.radians (35))
+                 self.send_speed_cmd(self.max_speed, math.radians (45))
                  dist += math.hypot(prev[0] - self.pose_xy[0],
                               prev[1] - self.pose_xy[1])
                  prev = self.pose_xy
