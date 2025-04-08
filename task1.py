@@ -97,7 +97,7 @@ class Task1(Node):
         prev = self.pose_xy
         while dist < 3.14*0.75/2:
             if self.update() == 'pose2d':
-                 self.send_speed_cmd(self.max_speed, math.radians (47))
+                 self.send_speed_cmd(self.max_speed, math.radians (45))
                  dist += math.hypot(prev[0] - self.pose_xy[0],
                               prev[1] - self.pose_xy[1])
                  prev = self.pose_xy
@@ -105,9 +105,10 @@ class Task1(Node):
 
     def run(self):
         try:
-            self.navigate_row()
-            self.go_straight(1.0)
-            self.turn_deg(180)
+            for num in range(10):
+                self.navigate_row()
+                self.go_straight(1.0)
+                self.turn_deg(180)
         except BusShutdownException:
             pass
 
