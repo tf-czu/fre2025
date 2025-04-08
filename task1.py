@@ -83,6 +83,7 @@ class Task1(Node):
                     break
 
     def go_straight(self, dist):
+        self.end_of_row = self.pose_xy
         while True:
             if self.update() == 'depth':
                 if math.hypot(self.end_of_row[0] - self.pose_xy[0],
@@ -90,11 +91,23 @@ class Task1(Node):
                     self.send_speed_cmd(self.max_speed, 0)
                 else:
                     self.send_speed_cmd(0, 0)
+                    break
+    def turn_deg(self, angle):
+        dist = 0
+        prev = self.pose_xy
+        while dist < 3.14*0.75/2:
+            if self.update() == 'pose2d':
+                 self.send_speed_cmd(self.max_speed, math.radians (35))
+                 dist += math.hypot(prev[0] - self.pose_xy[0],
+                              prev[1] - self.pose_xy[1])
+                 prev = self.pose_xy
+        self.send_speed_cmd(0, 0)
 
     def run(self):
         try:
-            self.navigate_row()
+            #self.navigate_row()
             self.go_straight(1.0)
+            self.turn_deg(180)
         except BusShutdownException:
             pass
 
