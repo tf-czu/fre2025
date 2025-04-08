@@ -94,8 +94,8 @@ class Task1(Node):
                 else:
                     self.send_speed_cmd(0, 0)
                     break
-    def turn_deg(self, angle):
-        print(self.time, 'turn_deg')
+    def turn_deg_left(self, angle):
+        print(self.time, 'turn_deg_left')
         dist = 0
         prev = self.pose_xy
         while dist < 3.14*0.75/2:
@@ -106,12 +106,27 @@ class Task1(Node):
                  prev = self.pose_xy
         self.send_speed_cmd(0, 0)
 
+    def turn_deg_right(self, angle):
+        print(self.time, 'turn_deg_right')
+        dist = 0
+        prev = self.pose_xy
+        while dist < 3.14*0.75/2:
+            if self.update() == 'pose2d':
+                 self.send_speed_cmd(self.max_speed, math.radians (-45))
+                 dist += math.hypot(prev[0] - self.pose_xy[0],
+                              prev[1] - self.pose_xy[1])
+                 prev = self.pose_xy
+        self.send_speed_cmd(0, 0)
+
     def run(self):
         try:
             for num in range(10):
                 self.navigate_row()
                 self.go_straight(1.0)
-                self.turn_deg(180)
+                self.turn_deg_left(180)
+                self.navigate_row()
+                self.go_straight(1.0)
+                self.turn_deg_right(180)
         except BusShutdownException:
             pass
 
