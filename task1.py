@@ -105,7 +105,7 @@ class Task1(Node):
 
     def run(self):
         try:
-            #self.navigate_row()
+            self.navigate_row()
             self.go_straight(1.0)
             self.turn_deg(180)
         except BusShutdownException:
