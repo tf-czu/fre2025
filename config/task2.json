@@ -3,12 +3,12 @@
   "robot": {
     "modules": {
       "app": {
-          "driver": "task2:Task2",
-          "in": ["depth", "pose2d"],
-          "out": ["desired_steering"],
-          "init": {
-            "max_speed": 0.2
-         }
+        "driver": "task2:Task2",
+        "in": ["depth", "pose2d"],
+        "out": ["desired_steering"],
+        "init": {
+          "max_speed": 0.2
+        }
       },
       "platform": {
         "driver": "osgar.platforms.matty:Matty",
@@ -25,10 +25,13 @@
         }
       },
       "serial": {
-          "driver": "serial",
-          "in": ["raw"],
-          "out": ["raw"],
-          "init": {"port": "/dev/ttyUSB0", "speed": 115200}
+        "driver": "serial",
+        "in": ["raw"],
+        "out": ["raw"],
+        "init": {
+          "port": "/dev/ttyUSB0",
+          "speed": 115200
+        }
       },
       "oak": {
         "driver": "osgar.drivers.oak_camera:OakCamera",
@@ -48,66 +51,51 @@
           "stereo_extended_disparity": false,
           "stereo_subpixel": false,
           "stereo_left_right_check": true,
-
-	"model": {
-                  "blob": "cone/coneslayer_openvino_2022.1_6shave.blob"
-            },
-            "nn_config": {
-                "output_format": "detection",
-                "NN_family": "YOLO",
-                "input_size": "416x416",
-                "NN_specific_metadata": {
-                    "classes": 1,
-                    "coordinates": 4,
-                    "anchors": [
-                        2.896484375,
-                        5.90234375,
-                        4.6875,
-                        9.09375,
-                        7.75390625,
-                        14.59375,
-                        12.8359375,
-                        22.84375,
-                        28.59375,
-                        48.25,
-                        53.875,
-                        109.6875,
-                        109.5625,
-                        155.375,
-                        142.25,
-                        243.75,
-                        209.375,
-                        383.0
-                    ],
-                    "anchor_masks": {
-                        "side52": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "side26": [
-                            3,
-                            4,
-                            5
-                        ],
-                        "side13": [
-                            6,
-                            7,
-                            8
-                        ]
-                    },
-                    "iou_threshold": 0.5,
-                    "confidence_threshold": 0.54
-                }
-            },
-            "mappings": {
-                "labels": [
-                    "cone"
-                ]
+          "model": {
+            "blob": "cone/coneslayer_openvino_2022.1_6shave.blob"
+          },
+          "nn_config": {
+            "output_format": "detection",
+            "NN_family": "YOLO",
+            "input_size": "416x416",
+            "NN_specific_metadata": {
+              "classes": 1,
+              "coordinates": 4,
+              "anchors": [
+                2.896484375,
+                5.90234375,
+                4.6875,
+                9.09375,
+                7.75390625,
+                14.59375,
+                12.8359375,
+                22.84375,
+                28.59375,
+                48.25,
+                53.875,
+                109.6875,
+                109.5625,
+                155.375,
+                142.25,
+                243.75,
+                209.375,
+                383.0
+              ],
+              "anchor_masks": {
+                "side52": [0, 1, 2],
+                "side26": [3, 4, 5],
+                "side13": [6, 7, 8]
+              },
+              "iou_threshold": 0.5,
+              "confidence_threshold": 0.54
             }
+          },
+          "mappings": {
+            "labels": ["cone"]
           }
-      },
-
+        }
+      }
+    },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
       ["platform.pose2d", "app.pose2d"],
