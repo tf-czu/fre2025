@@ -9,7 +9,13 @@ from task1 import Task1
 
 
 class Task2(Task1):
-    pass
+
+    def __init__(self, config, bus):
+        super().__init__(config, bus)
+        self.detections = None
+
+    def on_detections(self, data):
+        self.detections = data
    
 
 
