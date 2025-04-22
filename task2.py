@@ -18,7 +18,7 @@ class Task2(Task1):
         fruit = []
         for det in data:
             if det [0] == "banana":
-                print (det)
+                print (self.time, det)
                 fruit.append(det)
         self.detections = fruit
    
