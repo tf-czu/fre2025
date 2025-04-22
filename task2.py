@@ -15,7 +15,12 @@ class Task2(Task1):
         self.detections = None
 
     def on_detections(self, data):
-        self.detections = data
+        fruit = []
+        for det in data:
+            if det [0] == "banana":
+                print (det)
+                fruit.append(det)
+        self.detections = fruit
    
 
 
