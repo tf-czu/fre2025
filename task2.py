@@ -2,6 +2,7 @@
   FRE2025 - TASK2
 """
 import math
+import numpy as np
 
 from osgar.node import Node
 from osgar.bus import BusShutdownException
@@ -16,6 +17,8 @@ class Task2(Task1):
         self.fruits = []
 
     def on_detections(self, data):
+        if self.time.total_seconds() < 5:
+            return
         fruit = []
         for det in data:
             if det [0] == "banana":
@@ -24,7 +27,8 @@ class Task2(Task1):
                 y_center = (y1 + y2) / 2
                 beta = (0.5 - x_center) * math.radians(69)
                 alpha = self.pose_angle
-                dist = 0.5
+                mask = self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)] != 0
+                dist = np.median(self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)][mask])/1000
                 x_fruit = self.pose_xy [0] + dist * math.cos(alpha + beta)
                 y_fruit = self.pose_xy [1] + dist * math.sin(alpha + beta)
                 self.fruits.append ((x_fruit, y_fruit))
