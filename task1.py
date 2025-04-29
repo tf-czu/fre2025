@@ -17,6 +17,7 @@ class Task1(Node):
         self.debug_arr = []
         self.end_of_row = None
         self.pose_xy = (0, 0)
+        self.pose_angle = 0
         self.depth = None
 
     def on_depth(self, data):
@@ -68,6 +69,7 @@ class Task1(Node):
 
     def on_pose2d(self, data):
         self.pose_xy = data[0]/1000, data[1]/1000
+        self.pose_angle = math.radians(data[2]/100)
 
     def send_speed_cmd(self, speed, steering_angle):
         return self.bus.publish(
