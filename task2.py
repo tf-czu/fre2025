@@ -16,6 +16,7 @@ class Task2(Task1):
         super().__init__(config, bus)
         self.detections = None
         self.fruits = []
+        self.output_csv_enabled = config.get('outputcsv', False) 
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
