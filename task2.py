@@ -49,6 +49,8 @@ class Task2(Task1):
 
     def draw(self):
         import matplotlib.pyplot as plt
+        for x_center, y_center in self.fruits:
+            plt.scatter(x_center, y_center)
 
         if not self.fruits:
             print("Žádné body k zobrazení nebo exportu.")
