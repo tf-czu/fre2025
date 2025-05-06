@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
-from task2 import Task2
+from task2 import Task2, cluster
 
 
 class Task2Test(unittest.TestCase):
@@ -16,6 +16,11 @@ class Task2Test(unittest.TestCase):
         })
         app.on_pose2d([0, 0, 0])
 #        bus.publish.assert_called_with('emergency_stop', True)
+
+    def test_cluster(self):
+        self.assertEqual (cluster([(1,2)]),[(1,2)])
+        self.assertEqual (cluster([(1,2), (1.1, 2)]),[(1,2)])
+        self.assertEqual (cluster([(1,2), (1.1, 2), (3,4)]),[(1,2), (3,4)])
 
 if __name__ == "__main__":
     unittest.main()

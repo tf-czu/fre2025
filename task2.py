@@ -10,6 +10,18 @@ from osgar.bus import BusShutdownException
 from task1 import Task1
 
 
+def cluster(points, radius = 0.3):
+    s_points = []
+    for p in points:
+        for sp in s_points:
+            if math.hypot(p[0] - sp[0], p[1] - sp[1]) < radius:
+                break
+        else:
+            s_points.append(p)
+    return s_points
+
+
+
 class Task2(Task1):
 
     def __init__(self, config, bus):
@@ -48,22 +60,32 @@ class Task2(Task1):
             print(f"Uloženo do souboru: {filename}")
 
     def draw(self):
+        from matplotlib.patches import Circle
         import matplotlib.pyplot as plt
+        fig, ax = plt.subplots()
         for x_center, y_center in self.fruits:
-            plt.scatter(x_center, y_center)
+            ax.scatter(x_center, y_center)
 
         if not self.fruits:
             print("Žádné body k zobrazení nebo exportu.")
             return
 
-        points = np.array(self.fruits)
-        center = points.mean(axis=0)  # centroid (průměrný bod)
+       #  points = np.array(self.fruits)
+       #  center = points.mean(axis=0)  # centroid (průměrný bod)
+        radius = 0.2
+        center = cluster(self.fruits, radius)
+        for c in center:
+            circle = Circle(c, radius, fill=False, edgecolor='r', linestyle='--')
+            ax.add_patch(circle)
+            ax.set_aspect('equal')
+            ax.scatter(x_center, y_center)
+        #assert 0, center
 
         # Uložení do CSV (pokud povoleno)
         self.save_csv_if_enabled(center)
 
         # Vykreslení centroidu
-        plt.scatter(center[0], center[1], color='red', label='Reprezentant (průměr)')
+        #plt.scatter(center[0], center[1], color='red', label='Reprezentant (průměr)')
         plt.legend()
         plt.title('Reprezentativní bod shluku')
         plt.grid(True, linestyle='--', color='gray', alpha=0.6)
