@@ -28,7 +28,7 @@ class Task2(Task1):
         super().__init__(config, bus)
         self.detections = None
         self.fruits = []
-        self.output_csv_enabled = config.get('outputcsv', False) 
+        self.output_csv_enabled = config.get('outputcsv', True)
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
@@ -56,7 +56,7 @@ class Task2(Task1):
             with open(filename, mode='w', newline='') as file:
                 writer = csv.writer(file)
                 writer.writerow(['x', 'y'])  # hlavička
-                writer.writerow(centroid.tolist())
+                writer.writerows(centroid)
             print(f"Uloženo do souboru: {filename}")
 
     def draw(self):
