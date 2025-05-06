@@ -49,6 +49,10 @@ class Task2(Task1):
                 print (self.time, x_fruit, y_fruit)
                 fruit.append(det)
         self.detections = fruit
+        if len(self.detections) > 0:
+            radius = 0.2
+            center = cluster(self.fruits, radius)
+            self.save_csv_if_enabled(center)
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
@@ -82,7 +86,7 @@ class Task2(Task1):
         #assert 0, center
 
         # Uložení do CSV (pokud povoleno)
-        self.save_csv_if_enabled(center)
+       # self.save_csv_if_enabled(center)
 
         # Vykreslení centroidu
         #plt.scatter(center[0], center[1], color='red', label='Reprezentant (průměr)')
