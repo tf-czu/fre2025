@@ -32,9 +32,9 @@ class Task3(Task1):
         if self.time.total_seconds() < 5:
             return
 
-        camera_height = 0.5  # výška kamery nad zemí v metrech, upravit dle potřeby
+        camera_height = 0.25  # výška kamery nad zemí v metrech, upravit dle potřeby
         vertical_fov = math.radians(55)  # vertikální zorné pole kamery
-        camera_tilt = math.radians(20) #naklonění kamery, upravit úhel
+        camera_tilt = math.radians(0) #naklonění kamery, upravit úhel
 
         fruit = []
         for det in data:
