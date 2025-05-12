@@ -32,6 +32,10 @@ class Task3(Task1):
         if self.time.total_seconds() < 5:
             return
 
+        camera_height = 0.5  # výška kamery nad zemí v metrech, upravit dle potřeby
+        vertical_fov = math.radians(55)  # vertikální zorné pole kamery
+        camera_tilt = math.radians(20) #naklonění kamery, upravit úhel
+
         fruit = []
         for det in data:
             if det[0] == "banana":
@@ -46,8 +50,10 @@ class Task3(Task1):
                 dist = np.median(self.depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)][mask]) / 1000
                 x_fruit = self.pose_xy[0] + dist * math.cos(alpha + beta)
                 y_fruit = self.pose_xy[1] + dist * math.sin(alpha + beta)
-                self.fruits.append((x_fruit, y_fruit))
-                print(self.time, x_fruit, y_fruit)
+                theta = camera_tilt + (0.5 - y_center) * vertical_fov
+                z_fruit = camera_height - dist * math.sin(theta)
+                self.fruits.append((x_fruit, y_fruit, z_fruit))
+                print(self.time, x_fruit, y_fruit, z_fruit)
                 fruit.append(det)
 
         self.detections = fruit
@@ -61,7 +67,7 @@ class Task3(Task1):
             filename = "CULS-Robotics-task3.csv"
             with open(filename, mode='w', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(['x', 'y'])
+                writer.writerow(['x', 'y', 'z'])
                 writer.writerows(centroid)
             print(f"Uloženo do souboru: {filename}")
 
