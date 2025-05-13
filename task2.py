@@ -29,13 +29,14 @@ class Task2(Task1):
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
+        self.save_csv_if_enabled([]) #create empty file
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
             return
         fruit = []
         for det in data:
-            if det [0] == "banana":
+            if det [0] == "strawberry":
                 x1, y1, x2, y2 = det[2]
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
