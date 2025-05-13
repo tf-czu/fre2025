@@ -37,6 +37,7 @@
         "init": {
           "fps": 10,
           "is_color": true,
+	  "video_encoder": "h264",
           "is_depth": true,
           "laser_projector_current": 1200,
           "is_imu_enabled": true,
