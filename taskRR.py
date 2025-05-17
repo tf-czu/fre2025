@@ -15,7 +15,7 @@ class TaskRR(Node):
         super().__init__(config, bus)
         bus.register('desired_steering')
         self.max_speed = config.get('max_speed', 0.2)
-        self.turn_angle = config.get('turn_angle', 20)
+        self.turn_angle = config.get('turn_angle', 10)
         self.verbose = False
         self.debug_arr = []
         self.pose_xy = (0, 0)
@@ -62,13 +62,16 @@ class TaskRR(Node):
             green_amounts.append(green_pixels)
 
         # Najdi směr s nejmenším množstvím zelené
-        best_index = np.argmin(green_amounts)
-        direction = (best_index - N // 2) * self.turn_angle
+        if max(green_amounts) > 1000:
+            best_index = np.argmin(green_amounts)
+            direction = (best_index - N // 2) * self.turn_angle
+        else:
+            direction = 0
 
         if self.verbose:
             print(self.time, "green amounts:", green_amounts, "→", direction)
 
-        self.send_speed_cmd(self.max_speed, math.radians(direction))
+        self.send_speed_cmd(self.max_speed, math.radians(- direction))
         return True  # pokračuj v jízdě
 
     def navigate_by_color(self):
