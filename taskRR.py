@@ -20,11 +20,13 @@ class TaskRR(Node):
         self.debug_arr = []
         self.pose_xy = (0, 0)
         self.pose_angle = 0
-        self.rgb = None  # RGB obraz z OAK-D
+        self.color = None  # RGB obraz z OAK-D
 
-    def on_rgb(self, data):
+    def on_color(self, data):
         # Předpokládáme, že `data` je BGR obraz jako NumPy array
-        self.rgb = data
+        nparr = np.frombuffer(data, np.uint8)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        self.color = image
 
     def on_pose2d(self, data):
         self.pose_xy = data[0]/1000, data[1]/1000
@@ -72,9 +74,9 @@ class TaskRR(Node):
     def navigate_by_color(self):
         print(self.time, 'navigate_by_color')
         while True:
-            if self.update() == 'rgb':
-                if self.rgb is not None:
-                    if not self.navigate_by_color_step(self.rgb):
+            if self.update() == 'color':
+                if self.color is not None:
+                    if not self.navigate_by_color_step(self.color):
                         break
 
     def run(self):
