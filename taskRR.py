@@ -10,7 +10,7 @@ from osgar.node import Node
 from osgar.bus import BusShutdownException
 
 
-class Task1(Node):
+class TaskRR(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register('desired_steering')
