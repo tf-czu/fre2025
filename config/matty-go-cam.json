@@ -8,8 +8,8 @@
           "out": ["desired_speed"],
           "init": {
             "max_speed": 0.5,
-            "dist": 10,
-            "timeout": 60
+            "dist": 1000,
+	    "timeout": 600
           }
       },
       "platform": {
