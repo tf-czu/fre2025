@@ -29,25 +29,28 @@ class Task2(Task1):
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
+        self.save_csv_if_enabled([]) #create empty file
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
             return
         fruit = []
         for det in data:
-            if det [0] == "banana":
+            if det [0] == "strawberry":
                 x1, y1, x2, y2 = det[2]
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
                 beta = (0.5 - x_center) * math.radians(69)
                 alpha = self.pose_angle
                 mask = self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)] != 0
-                dist = np.median(self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)][mask])/1000
-                x_fruit = self.pose_xy [0] + dist * math.cos(alpha + beta)
-                y_fruit = self.pose_xy [1] + dist * math.sin(alpha + beta)
-                self.fruits.append ((x_fruit, y_fruit))
-                print (self.time, x_fruit, y_fruit)
-                fruit.append(det)
+                if mask.shape[0] > 0 and mask.shape[1] > 0 and mask.max():
+                    dist = np.median(self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)][mask])/1000
+                    if dist < 2.0:
+                        x_fruit = self.pose_xy [0] + dist * math.cos(alpha + beta)
+                        y_fruit = self.pose_xy [1] + dist * math.sin(alpha + beta)
+                        self.fruits.append ((x_fruit, y_fruit))
+                        print (self.time, x_fruit, y_fruit)
+                        fruit.append(det)
         self.detections = fruit
         if len(self.detections) > 0:
             radius = 0.2
