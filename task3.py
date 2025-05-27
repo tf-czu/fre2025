@@ -13,7 +13,7 @@ def cluster(points, radius=0.3):
     s_points = []
     for p in points:
         for sp in s_points:
-            if math.hypot(p[0] - sp[0], p[1] - sp[1]) < radius:
+            if math.hypot(p[1] - sp[1], p[2] - sp[2]) < radius:
                 break
         else:
             s_points.append(p)
