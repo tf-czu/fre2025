@@ -36,9 +36,11 @@ class Task3(Task1):
         vertical_fov = math.radians(55)  # vertikální zorné pole kamery
         camera_tilt = math.radians(0) #naklonění kamery, upravit úhel
 
+        fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         fruit = []
         for det in data:
-            if det[0] == "banana":
+            fruit_type = det[0]
+            if fruit_type in fruit_types:
                 x1, y1, x2, y2 = det[2]
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
@@ -52,8 +54,8 @@ class Task3(Task1):
                 y_fruit = self.pose_xy[1] + dist * math.sin(alpha + beta)
                 theta = camera_tilt + (0.5 - y_center) * vertical_fov
                 z_fruit = camera_height - dist * math.sin(theta)
-                self.fruits.append((x_fruit, y_fruit, z_fruit))
-                print(self.time, x_fruit, y_fruit, z_fruit)
+                self.fruits.append((fruit_type, x_fruit, y_fruit, z_fruit))
+                print(self.time, fruit_type, x_fruit, y_fruit, z_fruit)
                 fruit.append(det)
 
         self.detections = fruit
@@ -67,7 +69,7 @@ class Task3(Task1):
             filename = "CULS-Robotics-task3.csv"
             with open(filename, mode='w', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(['x', 'y', 'z'])
+                writer.writerow(['fruit_type', 'x', 'y', 'z'])
                 writer.writerows(centroid)
             print(f"Uloženo do souboru: {filename}")
 
