@@ -30,7 +30,7 @@
         "in": ["raw"],
         "out": ["raw"],
         "init": {
-          "port": "/dev/ttyUSB0",
+          "port": "/dev/esp32",
           "speed": 115200
         }
       },
