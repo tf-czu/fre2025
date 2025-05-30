@@ -58,6 +58,6 @@ class Task3c(Node):
 
     def run(self):
         try:
-            self.drive_full_circle(1.2)  # opisuje kruh o r = 1.2 m
+            self.drive_full_circle(1)  # opisuje kruh o r = 1.2 m
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
