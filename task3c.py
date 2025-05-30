@@ -30,11 +30,14 @@ class Task3c(Node):
         prev = self.pose_xy
 
         while dist < total_distance:
-            if self.update() == 'pose2d':
+            channel = self.update()
+            if channel == 'pose2d':
                 self.send_speed_cmd(self.max_speed, steering_angle)
                 dist += math.hypot(prev[0] - self.pose_xy[0],
                                    prev[1] - self.pose_xy[1])
                 prev = self.pose_xy
+            else:
+                continue  # ignoruj např. 'depth'
 
         self.send_speed_cmd(0, 0)  # zastaví robota
 
