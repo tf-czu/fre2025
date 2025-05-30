@@ -4,8 +4,13 @@
     "modules": {
       "app": {
         "driver": "osgar.go:Go",
-        "in": ["emergency_stop", "pose2d"],
-        "out": ["desired_speed"],
+        "in": [
+          "emergency_stop",
+          "pose2d"
+        ],
+        "out": [
+          "desired_speed"
+        ],
         "init": {
           "max_speed": 0.5,
           "dist": 10,
@@ -14,22 +19,32 @@
       },
       "platform": {
         "driver": "osgar.platforms.matty:Matty",
-        "in": ["esp_data"],
-        "out": ["esp_data"],
+        "in": [
+          "esp_data"
+        ],
+        "out": [
+          "esp_data"
+        ],
         "init": {}
       },
       "timer": {
         "driver": "timer",
         "in": [],
-        "out": ["tick"],
+        "out": [
+          "tick"
+        ],
         "init": {
           "sleep": 0.1
         }
       },
       "serial": {
         "driver": "serial",
-        "in": ["raw"],
-        "out": ["raw"],
+        "in": [
+          "raw"
+        ],
+        "out": [
+          "raw"
+        ],
         "init": {
           "port": "/dev/ttyUSB0",
           "speed": 115200
@@ -60,19 +75,37 @@
       "wswitch": {
         "driver": "wswitch:WebPageSwitch",
         "in": [],
-        "out": ["status"],
-        "init": {
-          "checked": false
-        }
+        "out": [
+          "status"
+        ],
+        "init": {}
       }
     },
     "links": [
-      ["app.desired_steering", "platform.desired_steering"],
-      ["platform.pose2d", "app.pose2d"],
-      ["serial.raw", "platform.esp_data"],
-      ["platform.esp_data", "serial.raw"],
-      ["timer.tick", "platform.tick"],
-      ["wswitch.status", "app.emergency_stop"]
+      [
+        "app.desired_steering",
+        "platform.desired_steering"
+      ],
+      [
+        "platform.pose2d",
+        "app.pose2d"
+      ],
+      [
+        "serial.raw",
+        "platform.esp_data"
+      ],
+      [
+        "platform.esp_data",
+        "serial.raw"
+      ],
+      [
+        "timer.tick",
+        "platform.tick"
+      ],
+      [
+        "wswitch.status",
+        "app.emergency_stop"
+      ]
     ]
   }
 }
