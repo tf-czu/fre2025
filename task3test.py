@@ -16,7 +16,7 @@ def cluster(points, radius=0.3):
     return s_points
 
 
-class Task3(Node):
+class Task3test(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         self.bus.register('desired_steering')
