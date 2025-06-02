@@ -5,14 +5,12 @@ import math
 
 from osgar.node import Node
 from osgar.bus import BusShutdownException
-from wswitch import WebPageSwitch
 
 
 class Task1(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register('desired_steering')
-        bus.register('status')
         self.max_speed = config.get('max_speed', 0.2)
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
@@ -21,7 +19,6 @@ class Task1(Node):
         self.pose_xy = (0, 0)
         self.pose_angle = 0
         self.depth = None
-        self.enabled = True
 
     def on_depth(self, data):
         self.depth = data
@@ -125,20 +122,29 @@ class Task1(Node):
 
     def run(self):
         try:
+            while not self.enabled and self.is_bus_alive():
+                self.update()
+
             for num in range(10):
+                if not self.enabled:
+                    self.send_speed_cmd(0, 0)
                 while not self.enabled and self.is_bus_alive():
                     self.update()
+
                 self.navigate_row()
                 self.go_straight(1.0)
                 self.turn_deg_left(180)
+
+                if not self.enabled:
+                    self.send_speed_cmd(0, 0)
                 while not self.enabled and self.is_bus_alive():
                     self.update()
+
                 self.navigate_row()
                 self.go_straight(1.0)
                 self.turn_deg_right(180)
         except BusShutdownException:
-            pass
-
+            self.send_speed_cmd(0, 0)
             pass
 
     def draw(self):
@@ -157,6 +163,3 @@ class Task1(Node):
 
 
 # vim: expandtab sw=4 ts=4
-
-    def on_status(self, data):
-        self.enabled = data
