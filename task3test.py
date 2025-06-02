@@ -28,12 +28,14 @@ class Task3test(Node):
         self.pose_angle = 0
         self.depth = None
         self.fruits = []
+        self.trajectory = []  # seznam pozic pro vykreslení
         self.output_csv_enabled = config.get('outputcsv', True)
         self.max_speed = config.get('max_speed', 0.2)
 
     def on_pose2d(self, data):
         self.pose_xy = data[0] / 1000, data[1] / 1000
         self.pose_angle = math.radians(data[2] / 100)
+        self.trajectory.append(self.pose_xy)
 
     def on_depth(self, data):
         self.depth = np.array(data).reshape((400, 640))
@@ -54,57 +56,6 @@ class Task3test(Node):
                 beta = (0.5 - x_center) * math.radians(69)
                 alpha = self.pose_angle
 
-                # Výřez depth regionu
                 roi = self.depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)]
                 mask = roi != 0
                 if not np.any(mask):
-                    continue
-
-                dist = np.median(roi[mask]) / 1000  # v metrech
-                x_fruit = self.pose_xy[0] + dist * math.cos(alpha + beta)
-                y_fruit = self.pose_xy[1] + dist * math.sin(alpha + beta)
-
-                self.fruits.append((fruit_type, x_fruit, y_fruit))
-                print(self.time, fruit_type, x_fruit, y_fruit)
-                new_detections.append(det)
-
-        if new_detections:
-            clustered = cluster(self.fruits, radius=0.2)
-            self.save_csv_if_enabled(clustered)
-
-    def save_csv_if_enabled(self, fruits):
-        if self.output_csv_enabled:
-            filename = "CULS-Robotics-task3.csv"
-            with open(filename, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['fruit_type', 'x', 'y'])
-                writer.writerows(fruits)
-            print(f"Uloženo do souboru: {filename}")
-
-    def send_speed_cmd(self, speed, steering_angle):
-        return self.bus.publish(
-            'desired_steering',
-            [round(speed * 1000), round(math.degrees(steering_angle) * 100)]
-        )
-
-    def drive_full_circle(self, radius):
-        print(self.time, f'drive_full_circle r={radius}')
-        steering_angle = self.max_speed / radius
-        total_distance = 2 * math.pi * radius
-        dist = 0
-        prev = self.pose_xy
-
-        while dist < total_distance:
-            channel = self.update()
-            if channel == 'pose2d':
-                self.send_speed_cmd(self.max_speed, steering_angle)
-                dist += math.hypot(prev[0] - self.pose_xy[0], prev[1] - self.pose_xy[1])
-                prev = self.pose_xy
-
-        self.send_speed_cmd(0, 0)
-
-    def run(self):
-        try:
-            self.drive_full_circle(1.0)
-        except BusShutdownException:
-            self.send_speed_cmd(0, 0)
