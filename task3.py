@@ -64,6 +64,25 @@ class Task3(Task1):
             center = cluster(self.fruits, radius)
             self.save_csv_if_enabled(center)
 
+    def drive_full_circle(self, radius):
+        print(self.time, f'drive_full_circle r={radius}')
+        steering_angle = self.max_speed / radius  # rad/s
+        total_distance = 2 * math.pi * radius     # délka kružnice
+        dist = 0
+        prev = self.pose_xy
+
+        while dist < total_distance:
+            channel = self.update()
+            if channel == 'pose2d':
+                self.send_speed_cmd(self.max_speed, steering_angle)
+                dist += math.hypot(prev[0] - self.pose_xy[0],
+                                   prev[1] - self.pose_xy[1])
+                prev = self.pose_xy
+            else:
+                continue  # ignoruj depth, detections apod.
+
+        self.send_speed_cmd(0, 0)  # zastaví robota
+
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
             filename = "CULS-Robotics-task3.csv"
@@ -75,14 +94,8 @@ class Task3(Task1):
 
     def run(self):
         try:
-            for num in range(10):
-                self.navigate_row()
-                self.go_straight(1.0)
-                self.turn_deg_left(180)
-                self.navigate_row()
-                self.go_straight(1.0)
-                self.turn_deg_right(180)
+            self.drive_full_circle(1)  # opisuje kruh o r = 1 m
         except BusShutdownException:
-            pass
+            self.send_speed_cmd(0, 0)
 
 # vim: expandtab sw=4 ts=4

@@ -37,7 +37,7 @@
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
-            "fps": 10,
+            "fps": 20,
             "is_color": true,
             "video_encoder": "h264",
             "is_depth": true,
@@ -58,12 +58,12 @@
             "stereo_left_right_check": true,
 
             "model": {
-                  "blob": "models/fruits.blob"
+                  "blob": "models/fruits640352.blob"
             },
             "nn_config": {
                   "output_format": "detection",
                   "NN_family": "YOLO",
-                  "input_size": "640x640",
+                  "input_size": "640x352",
                   "NN_specific_metadata": {
                       "classes": 5,
                       "coordinates": 4,
