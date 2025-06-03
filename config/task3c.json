@@ -4,7 +4,7 @@
     "modules": {
       "app": {
         "driver": "task3c:Task3c",
-        "in": ["depth", "pose2d"],
+        "in": ["depth", "pose2d", "detections"],
         "out": ["desired_steering"],
         "init": {
           "max_speed": 0.2,
@@ -37,7 +37,7 @@
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
-            "fps": 10,
+            "fps": 20,
             "is_color": true,
             "video_encoder": "h264",
             "is_depth": true,
