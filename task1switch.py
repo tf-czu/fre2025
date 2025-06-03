@@ -12,7 +12,7 @@ class Task1(Node):
         super().__init__(config, bus)
         bus.register('desired_steering')
         bus.register('status')
-        self.enabled = True
+        self.enabled = False
         self.max_speed = config.get('max_speed', 0.2)
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
@@ -24,6 +24,9 @@ class Task1(Node):
 
     def on_depth(self, data):
         self.depth = data
+
+    def on_status(self, data):
+        self.enabled = data
 
     def navigate_row_step(self, data):
         """
@@ -74,6 +77,9 @@ class Task1(Node):
         self.pose_angle = math.radians(data[2]/100)
 
     def send_speed_cmd(self, speed, steering_angle):
+        if not self.enabled:
+            speed = 0
+            steering_angle = 0
         return self.bus.publish(
             'desired_steering',
             [round(speed*1000), round(math.degrees(steering_angle)*100)]
@@ -102,7 +108,7 @@ class Task1(Node):
         print(self.time, 'turn_deg_left')
         dist = 0
         prev = self.pose_xy
-        while dist < 3.14*0.75/2:
+        while dist < (3.14*0.75/2)+0.15:
             if self.update() == 'pose2d':
                  self.send_speed_cmd(self.max_speed, math.radians (45))
                  dist += math.hypot(prev[0] - self.pose_xy[0],
@@ -114,7 +120,7 @@ class Task1(Node):
         print(self.time, 'turn_deg_right')
         dist = 0
         prev = self.pose_xy
-        while dist < 3.14*0.75/2:
+        while dist < (3.14*0.75/2)+0.15:
             if self.update() == 'pose2d':
                  self.send_speed_cmd(self.max_speed, math.radians (-45))
                  dist += math.hypot(prev[0] - self.pose_xy[0],
@@ -124,26 +130,12 @@ class Task1(Node):
 
     def run(self):
         try:
-            while not self.enabled and self.is_bus_alive():
-                self.update()
-
             for num in range(10):
-                if not self.enabled:
-                    self.send_speed_cmd(0, 0)
-                while not self.enabled and self.is_bus_alive():
-                    self.update()
-
                 self.navigate_row()
-                self.go_straight(1.0)
+                self.go_straight(0.7)
                 self.turn_deg_left(180)
-
-                if not self.enabled:
-                    self.send_speed_cmd(0, 0)
-                while not self.enabled and self.is_bus_alive():
-                    self.update()
-
                 self.navigate_row()
-                self.go_straight(1.0)
+                self.go_straight(0.7)
                 self.turn_deg_right(180)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
