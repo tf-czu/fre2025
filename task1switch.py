@@ -11,6 +11,8 @@ class Task1(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register('desired_steering')
+        bus.register('status')
+        self.enabled = True
         self.max_speed = config.get('max_speed', 0.2)
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
@@ -163,3 +165,7 @@ class Task1(Node):
 
 
 # vim: expandtab sw=4 ts=4
+
+
+    def on_status(self, data):
+        self.enabled = data
