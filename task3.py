@@ -76,69 +76,68 @@ class Task3(Task1):
             if dist < tolerance:
                 break
             heading = math.atan2(dy, dx)
-            angle_diff = (heading - self.pose_angle + math.pi) % (2 * math.pi) - math.pi
-            steering = max(-math.radians(25), min(math.radians(25), angle_diff))
-            self.send_speed_cmd(self.max_speed, steering)
+            angle_diff = heading - self.pose_angle
+            angle_diff = (angle_diff + math.pi) % (2 * math.pi) - math.pi
+            self.send_speed_cmd(self.max_speed, angle_diff)
         self.send_speed_cmd(0, 0)
 
-    def turn_to_tangent(self, center):
-        sx, sy = self.pose_xy
-        cx, cy = center
-        dx = sx - cx
-        dy = sy - cy
-        tangent = math.atan2(dx, -dy)  # proti směru hodinových ručiček
-
+    def turn_to_angle(self, target_angle, tolerance=math.radians(2)):
         while True:
             self.update()
-            diff = (tangent - self.pose_angle + math.pi) % (2 * math.pi) - math.pi
-            if abs(diff) < math.radians(3):
+            diff = target_angle - self.pose_angle
+            diff = (diff + math.pi) % (2 * math.pi) - math.pi
+            if abs(diff) < tolerance:
                 break
-            self.send_speed_cmd(0, 0.5 * diff)
-
+            angular_speed = 0.5 * diff
+            self.send_speed_cmd(0, angular_speed)
         self.send_speed_cmd(0, 0)
 
-    def drive_circle_around(self):
-        dist = 0.0
-        prev = self.pose_xy
-        full_circle = 2 * math.pi * self.radius
-        while dist < full_circle:
-            if self.update() == 'pose2d':
-                self.send_speed_cmd(self.max_speed, self.steering_angle)
-                dx = self.pose_xy[0] - prev[0]
-                dy = self.pose_xy[1] - prev[1]
-                dist += math.hypot(dx, dy)
-                prev = self.pose_xy
+    def drive_circle_by_angle(self, steering_angle, target_angle_deg):
+        start_angle = self.pose_angle
+        swept_angle = 0.0
+        prev_angle = start_angle
+
+        while swept_angle < math.radians(target_angle_deg):
+            channel = self.update()
+            if channel == 'pose2d':
+                self.send_speed_cmd(self.max_speed, steering_angle)
+                current_angle = self.pose_angle
+                delta = (current_angle - prev_angle + math.pi) % (2 * math.pi) - math.pi
+                swept_angle += abs(delta)
+                prev_angle = current_angle
         self.send_speed_cmd(0, 0)
 
-    def save_csv_if_enabled(self, centroid):
-        if self.output_csv_enabled:
-            filename = "CULS-Robotics-task3.csv"
-            with open(filename, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['fruit_type', 'x', 'y', 'z'])
-                writer.writerows(centroid)
-            print(f"Uloženo do souboru: {filename}")
+    def go_to_circle_and_drive(self, center):
+        print(self.time, f'Jízda ke stromu v {center}')
+        cx, cy = center
+        sx, sy = self.pose_xy
+
+        # Najet na obvod kruhu
+        dx = cx - sx
+        dy = cy - sy
+        dist = math.hypot(dx, dy)
+        if dist < 1e-3:
+            print("Robot je ve středu stromu, nelze určit směr.")
+            return
+        ux = dx / dist
+        uy = dy / dist
+        entry_x = cx - ux * self.radius
+        entry_y = cy - uy * self.radius
+        self.drive_to_point((entry_x, entry_y))
+
+        # Otočit se tangenciálně proti směru hodinových ručiček
+        tangent_angle = math.atan2(ux, -uy)
+        print(self.time, f'Otáčení do tangenciálního směru: {math.degrees(tangent_angle):.1f}°')
+        self.turn_to_angle(tangent_angle)
+
+        # Obkroužit celý strom
+        print(self.time, 'Začínám opisovat kružnici...')
+        self.drive_circle_by_angle(self.steering_angle_rad, 360)
 
     def run(self):
-        # pozice stromů v metrech relativně k začátku
-        trees = [(3.0, 1.0)]
-
         try:
-            for tree in trees:
-                cx, cy = tree
-                dx = self.pose_xy[0] - cx
-                dy = self.pose_xy[1] - cy
-                dist = math.hypot(dx, dy)
-                if dist == 0:
-                    continue
-                ux = dx / dist
-                uy = dy / dist
-                entry_x = cx + ux * self.radius
-                entry_y = cy + uy * self.radius
-
-                self.drive_to_point((entry_x, entry_y))
-                self.turn_to_tangent((cx, cy))
-                self.drive_circle_around()
-
+            for tree in self.trees:
+                self.go_to_circle_and_drive(tree)
+            self.send_speed_cmd(0, 0)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
