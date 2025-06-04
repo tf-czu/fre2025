@@ -110,6 +110,15 @@ class Task3(Task1):
                 prev = self.pose_xy
         self.send_speed_cmd(0, 0)
 
+    def save_csv_if_enabled(self, centroid):
+        if self.output_csv_enabled:
+            filename = "CULS-Robotics-task3.csv"
+            with open(filename, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['fruit_type', 'x', 'y', 'z'])
+                writer.writerows(centroid)
+            print(f"Uloženo do souboru: {filename}")
+
     def run(self):
         # pozice stromů v metrech relativně k začátku
         trees = [(3.0, 1.0)]
