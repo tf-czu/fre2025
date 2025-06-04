@@ -26,8 +26,11 @@ class Task3(Task1):
         self.output_csv_enabled = config.get('outputcsv', True)
         self.start_angle = None
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
-        self.steering_angle = math.radians(16.7)
-        self.radius = self.max_speed / self.steering_angle
+
+        self.trees = [(3, 1)]
+        self.radius = 1.0
+        self.steering_angle_deg = 16.7
+        self.steering_angle_rad = math.radians(self.steering_angle_deg) 
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
