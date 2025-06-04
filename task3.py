@@ -20,13 +20,23 @@ def cluster(points, radius=0.3):
     return s_points
 
 
-class Task3(Task1):
+class Task3(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        self.bus.register('desired_steering')
-        self.detections = None
+        # Registrace kanálů podle configu
+        bus.register('desired_steering')  # výstup
+        bus.register('pose2d')            # vstup (poloha)
+        bus.register('depth')             # vstup (ignorovaný)
+        bus.register('detections')        # vstup (ignorovaný)
+        
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
+        self.max_speed = config.get('max_speed', 0.2)  # rychlost v m/s
+        self.verbose = False
+        self.pose_xy = (0, 0)
+        self.pose_angle = 0
+        self.depth = None
+        self.detections = []
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
@@ -34,7 +44,7 @@ class Task3(Task1):
 
         camera_height = 0.25  # výška kamery nad zemí v metrech, upravit dle potřeby
         vertical_fov = math.radians(55)  # vertikální zorné pole kamery
-        camera_tilt = math.radians(0) #naklonění kamery, upravit úhel
+        camera_tilt = math.radians(40) #naklonění kamery, upravit úhel
 
         fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         fruit = []
@@ -64,24 +74,39 @@ class Task3(Task1):
             center = cluster(self.fruits, radius)
             self.save_csv_if_enabled(center)
 
-    def drive_full_circle(self, radius):
-        print(self.time, f'drive_full_circle r={radius}')
-        steering_angle = self.max_speed / radius  # rad/s
-        total_distance = 2 * math.pi * radius     # délka kružnice
-        dist = 0
+    def drive_full_circle(self):
+        print(self.time, 'drive_full_circle with steering_angle = 16.7°')
+        steering_angle = math.radians(16.7)
+        radius = self.max_speed / steering_angle
+        total_distance = 2 * math.pi * radius  # obvod kružnice
+        straight_distance = 1.0  # vzdálenost, kterou robot pojede rovně po kružnici
+        dist = 0.0
         prev = self.pose_xy
 
+        # 1. fáze – kružnice
         while dist < total_distance:
             channel = self.update()
             if channel == 'pose2d':
                 self.send_speed_cmd(self.max_speed, steering_angle)
-                dist += math.hypot(prev[0] - self.pose_xy[0],
-                                   prev[1] - self.pose_xy[1])
+                dx = self.pose_xy[0] - prev[0]
+                dy = self.pose_xy[1] - prev[1]
+                dist += math.hypot(dx, dy)
                 prev = self.pose_xy
-            else:
-                continue  # ignoruj depth, detections apod.
 
-        self.send_speed_cmd(0, 0)  # zastaví robota
+        # 2. fáze – rovná jízda
+        dist = 0.0
+        prev = self.pose_xy
+
+        while dist < straight_distance:
+            channel = self.update()
+            if channel == 'pose2d':
+                self.send_speed_cmd(self.max_speed, 0.0)  # rovně
+                dx = self.pose_xy[0] - prev[0]
+                dy = self.pose_xy[1] - prev[1]
+                dist += math.hypot(dx, dy)
+                prev = self.pose_xy
+
+        self.send_speed_cmd(0, 0)
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
@@ -94,7 +119,7 @@ class Task3(Task1):
 
     def run(self):
         try:
-            self.drive_full_circle(1)  # opisuje kruh o r = 1 m
+            self.drive_full_circle()
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
 
