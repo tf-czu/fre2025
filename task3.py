@@ -26,6 +26,8 @@ class Task3(Task1):
         self.output_csv_enabled = config.get('outputcsv', True)
         self.start_angle = None
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
+        self.steering_angle = math.radians(16.7)
+        self.radius = self.max_speed / self.steering_angle
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
@@ -74,73 +76,60 @@ class Task3(Task1):
             if dist < tolerance:
                 break
             heading = math.atan2(dy, dx)
-            self.send_speed_cmd(self.max_speed, heading - self.pose_angle)
+            angle_diff = (heading - self.pose_angle + math.pi) % (2 * math.pi) - math.pi
+            steering = max(-math.radians(25), min(math.radians(25), angle_diff))
+            self.send_speed_cmd(self.max_speed, steering)
         self.send_speed_cmd(0, 0)
 
-    def turn_to_angle(self, target_angle, tolerance=math.radians(3)):
-        while True:
-            self.update()
-            diff = target_angle - self.pose_angle
-            diff = (diff + math.pi) % (2 * math.pi) - math.pi
-            if abs(diff) < tolerance:
-                break
-            angular_speed = 0.5 * diff
-            self.send_speed_cmd(0, angular_speed)
-        self.send_speed_cmd(0, 0)
-
-    def drive_circle_around_point(self, center):
-        print(self.time, f"Objíždím strom na {center}")
-        steering_angle = math.radians(16.7)
-        radius = self.max_speed / steering_angle
-
-        cx, cy = center
+    def turn_to_tangent(self, center):
         sx, sy = self.pose_xy
+        cx, cy = center
         dx = sx - cx
         dy = sy - cy
-        dist_to_center = math.hypot(dx, dy)
+        tangent = math.atan2(dx, -dy)  # proti směru hodinových ručiček
 
-        if dist_to_center < 1e-3:
-            print("Robot je ve stredu kružnice, nelze určit vstupní bod.")
-            return
-
-        ux = dx / dist_to_center
-        uy = dy / dist_to_center
-        entry_x = cx + ux * radius
-        entry_y = cy + uy * radius
-        entry_point = (entry_x, entry_y)
-
-        self.drive_to_point(entry_point)
-        tangent_angle = math.atan2(ux, -uy)
-        self.turn_to_angle(tangent_angle)
-
-        self.start_angle = self.pose_angle
-        total_rotated = 0.0
-        prev_angle = self.start_angle
-
-        while total_rotated < 2 * math.pi:
-            channel = self.update()
-            if channel == 'pose2d':
-                self.send_speed_cmd(self.max_speed, steering_angle)
-                current = self.pose_angle
-                diff = (current - prev_angle + math.pi) % (2 * math.pi) - math.pi
-                total_rotated += abs(diff)
-                prev_angle = current
+        while True:
+            self.update()
+            diff = (tangent - self.pose_angle + math.pi) % (2 * math.pi) - math.pi
+            if abs(diff) < math.radians(3):
+                break
+            self.send_speed_cmd(0, 0.5 * diff)
 
         self.send_speed_cmd(0, 0)
 
-    def save_csv_if_enabled(self, centroid):
-        if self.output_csv_enabled:
-            filename = "CULS-Robotics-task3.csv"
-            with open(filename, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(['fruit_type', 'x', 'y', 'z'])
-                writer.writerows(centroid)
-            print(f"Uloženo do souboru: {filename}")
+    def drive_circle_around(self):
+        dist = 0.0
+        prev = self.pose_xy
+        full_circle = 2 * math.pi * self.radius
+        while dist < full_circle:
+            if self.update() == 'pose2d':
+                self.send_speed_cmd(self.max_speed, self.steering_angle)
+                dx = self.pose_xy[0] - prev[0]
+                dy = self.pose_xy[1] - prev[1]
+                dist += math.hypot(dx, dy)
+                prev = self.pose_xy
+        self.send_speed_cmd(0, 0)
 
     def run(self):
+        # pozice stromů v metrech relativně k začátku
+        trees = [(3.0, 1.0)]
+
         try:
-            trees = [(1.0, 1.0), (3.0, 1.0)]  # pozice stromů vůči robotovi
             for tree in trees:
-                self.drive_circle_around_point(tree)
+                cx, cy = tree
+                dx = self.pose_xy[0] - cx
+                dy = self.pose_xy[1] - cy
+                dist = math.hypot(dx, dy)
+                if dist == 0:
+                    continue
+                ux = dx / dist
+                uy = dy / dist
+                entry_x = cx + ux * self.radius
+                entry_y = cy + uy * self.radius
+
+                self.drive_to_point((entry_x, entry_y))
+                self.turn_to_tangent((cx, cy))
+                self.drive_circle_around()
+
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
