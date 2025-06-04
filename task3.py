@@ -20,23 +20,14 @@ def cluster(points, radius=0.3):
     return s_points
 
 
-class Task3(Node):
+class Task3(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        # Registrace kanálů podle configu
         bus.register('desired_steering')  # výstup
-        bus.register('pose2d')            # vstup (poloha)
-        bus.register('depth')             # vstup (ignorovaný)
-        bus.register('detections')        # vstup (ignorovaný)
-        
+        self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
-        self.max_speed = config.get('max_speed', 0.2)  # rychlost v m/s
-        self.verbose = False
-        self.pose_xy = (0, 0)
-        self.pose_angle = 0
-        self.depth = None
-        self.detections = []
+        self.save_csv_if_enabled([]) #create empty file
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
