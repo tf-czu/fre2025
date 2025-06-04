@@ -66,11 +66,9 @@ class Task3(Task1):
             self.save_csv_if_enabled(center)
 
     def drive_full_circle(self):
-        print(self.time, 'drive_full_circle: rovně → kružnice (steering_angle = 16.7°)')
+        print(self.time, 'drive_full_circle: rovně → kružnice (otáčení o 360°)')
         steering_angle = math.radians(16.7)
-        radius = self.max_speed / steering_angle
-        total_distance = 2 * math.pi * radius  # obvod kružnice
-        straight_distance = 1.0  # rovná jízda: 1 metr
+        straight_distance = 1.0  # rovná jízda: 1 m
 
         dist = 0.0
         prev = self.pose_xy
@@ -78,23 +76,24 @@ class Task3(Task1):
         while dist < straight_distance:
             channel = self.update()
             if channel == 'pose2d':
-                self.send_speed_cmd(self.max_speed, 0.0)  # rovně
+                self.send_speed_cmd(self.max_speed, 0.0)
                 dx = self.pose_xy[0] - prev[0]
                 dy = self.pose_xy[1] - prev[1]
                 dist += math.hypot(dx, dy)
                 prev = self.pose_xy
 
-        dist = 0.0
-        prev = self.pose_xy
+        start_angle = self.pose_angle
+        current_angle = start_angle
+        turned = 0.0
 
-        while dist < total_distance:
+        while abs(turned) < 2 * math.pi: 
             channel = self.update()
             if channel == 'pose2d':
                 self.send_speed_cmd(self.max_speed, steering_angle)
-                dx = self.pose_xy[0] - prev[0]
-                dy = self.pose_xy[1] - prev[1]
-                dist += math.hypot(dx, dy)
-                prev = self.pose_xy
+                prev_angle = current_angle
+                current_angle = self.pose_angle
+                delta = (current_angle - prev_angle + math.pi) % (2 * math.pi) - math.pi
+                turned += delta
 
         self.send_speed_cmd(0, 0)
 
