@@ -1,6 +1,3 @@
-"""
-  FRE2025 - TASK3
-"""
 import math
 import numpy as np
 import csv
@@ -23,19 +20,20 @@ def cluster(points, radius=0.3):
 class Task3(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        bus.register('desired_steering')  # výstup
+        bus.register('desired_steering')
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
-        self.save_csv_if_enabled([]) #create empty file
+        self.start_angle = None
+        self.save_csv_if_enabled([])  # vytvoř prázdný soubor
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
             return
 
-        camera_height = 0.25  # výška kamery nad zemí v metrech, upravit dle potřeby
-        vertical_fov = math.radians(55)  # vertikální zorné pole kamery
-        camera_tilt = math.radians(40) #naklonění kamery, upravit úhel
+        camera_height = 0.25
+        vertical_fov = math.radians(55)
+        camera_tilt = math.radians(40)
 
         fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         fruit = []
@@ -65,35 +63,68 @@ class Task3(Task1):
             center = cluster(self.fruits, radius)
             self.save_csv_if_enabled(center)
 
-    def drive_full_circle(self):
-        print(self.time, 'drive_full_circle: rovně → kružnice (otáčení o 360°)')
+    def drive_to_point(self, target, tolerance=0.05):
+        tx, ty = target
+        while True:
+            self.update()
+            x, y = self.pose_xy
+            dx = tx - x
+            dy = ty - y
+            dist = math.hypot(dx, dy)
+            if dist < tolerance:
+                break
+            heading = math.atan2(dy, dx)
+            self.send_speed_cmd(self.max_speed, heading - self.pose_angle)
+        self.send_speed_cmd(0, 0)
+
+    def turn_to_angle(self, target_angle, tolerance=math.radians(3)):
+        while True:
+            self.update()
+            diff = target_angle - self.pose_angle
+            diff = (diff + math.pi) % (2 * math.pi) - math.pi
+            if abs(diff) < tolerance:
+                break
+            angular_speed = 0.5 * diff
+            self.send_speed_cmd(0, angular_speed)
+        self.send_speed_cmd(0, 0)
+
+    def drive_circle_around_point(self, center):
+        print(self.time, f"Objíždím strom na {center}")
         steering_angle = math.radians(16.7)
-        straight_distance = 1.0  # rovná jízda: 1 m
+        radius = self.max_speed / steering_angle
 
-        dist = 0.0
-        prev = self.pose_xy
+        cx, cy = center
+        sx, sy = self.pose_xy
+        dx = sx - cx
+        dy = sy - cy
+        dist_to_center = math.hypot(dx, dy)
 
-        while dist < straight_distance:
-            channel = self.update()
-            if channel == 'pose2d':
-                self.send_speed_cmd(self.max_speed, 0.0)
-                dx = self.pose_xy[0] - prev[0]
-                dy = self.pose_xy[1] - prev[1]
-                dist += math.hypot(dx, dy)
-                prev = self.pose_xy
+        if dist_to_center < 1e-3:
+            print("Robot je ve stredu kružnice, nelze určit vstupní bod.")
+            return
 
-        start_angle = self.pose_angle
-        current_angle = start_angle
-        turned = 0.0
+        ux = dx / dist_to_center
+        uy = dy / dist_to_center
+        entry_x = cx + ux * radius
+        entry_y = cy + uy * radius
+        entry_point = (entry_x, entry_y)
 
-        while abs(turned) < 2 * math.pi: 
+        self.drive_to_point(entry_point)
+        tangent_angle = math.atan2(ux, -uy)
+        self.turn_to_angle(tangent_angle)
+
+        self.start_angle = self.pose_angle
+        total_rotated = 0.0
+        prev_angle = self.start_angle
+
+        while total_rotated < 2 * math.pi:
             channel = self.update()
             if channel == 'pose2d':
                 self.send_speed_cmd(self.max_speed, steering_angle)
-                prev_angle = current_angle
-                current_angle = self.pose_angle
-                delta = (current_angle - prev_angle + math.pi) % (2 * math.pi) - math.pi
-                turned += delta
+                current = self.pose_angle
+                diff = (current - prev_angle + math.pi) % (2 * math.pi) - math.pi
+                total_rotated += abs(diff)
+                prev_angle = current
 
         self.send_speed_cmd(0, 0)
 
@@ -108,8 +139,8 @@ class Task3(Task1):
 
     def run(self):
         try:
-            self.drive_full_circle()
+            trees = [(1.0, 1.0), (3.0, 1.0)]  # pozice stromů vůči robotovi
+            for tree in trees:
+                self.drive_circle_around_point(tree)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
-
-# vim: expandtab sw=4 ts=4
