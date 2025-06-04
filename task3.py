@@ -134,6 +134,15 @@ class Task3(Task1):
         print(self.time, 'Začínám opisovat kružnici...')
         self.drive_circle_by_angle(self.steering_angle_rad, 360)
 
+    def save_csv_if_enabled(self, centroid):
+        if self.output_csv_enabled:
+            filename = "CULS-Robotics-task3.csv"
+            with open(filename, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['fruit_type', 'x', 'y', 'z'])
+                writer.writerows(centroid)
+            print(f"Uloženo do souboru: {filename}")
+
     def run(self):
         try:
             for tree in self.trees:
