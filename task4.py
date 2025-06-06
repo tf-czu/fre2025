@@ -50,8 +50,8 @@ class Task4(Task1):
     def run(self):
         try:
             length = 9.0
-            for _ in range(3):
-                for _ in range(4):
+            while length > 0:
+                for _ in range(3):
                     self.go_straight(length)
                     self.turn_left_90deg()
                 length -= 1.0
