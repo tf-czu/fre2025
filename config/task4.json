@@ -50,16 +50,16 @@
             "blob": "models/fruits640352.blob"
           },
           "nn_config": {
-            "output_format": "detection",
-            "NN_family": "YOLO",
-            "input_size": "640x352",
-            "NN_specific_metadata": {
-              "classes": 5,
-              "coordinates": 4,
-              "iou_threshold": 0.5,
-              "confidence_threshold": 0.5
-            }
-          },
+          "output_format": "detection",
+          "NN_family": "YOLO",
+          "input_size": "640x352",
+          "NN_specific_metadata": {
+          "classes": 5,
+          "coordinates": 4,
+          "iou_threshold": 0.5,
+          "confidence_threshold": 0.5
+  }
+},
           "mappings": {
             "labels": ["apple", "banana", "grape", "lemon", "orange"]
           }
