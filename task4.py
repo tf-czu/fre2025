@@ -36,15 +36,16 @@ class Task4(Task1):
                     break
 
     def turn_left_90deg(self):
-        print(self.time, 'Otáčím se doleva o 90°')
-        start_angle = self.pose_angle
-        target = (start_angle + math.radians(90)) % (2 * math.pi)
-        while True:
+        print(self.time, 'Zatáčím vlevo o 90° během jízdy')
+        dist = 0
+        prev = self.pose_xy
+        arc_length = (math.pi * 0.75 / 2) / 2  # původně pro 180°, teď polovina pro 90°
+        while dist < arc_length + 0.1:
             if self.update() == 'pose2d':
-                diff = (target - self.pose_angle + math.pi) % (2 * math.pi) - math.pi
-                if abs(diff) < math.radians(3):
-                    break
-                self.send_speed_cmd(0, 1.0 * diff)
+                self.send_speed_cmd(self.max_speed, math.radians(45))
+                dist += math.hypot(prev[0] - self.pose_xy[0],
+                                   prev[1] - self.pose_xy[1])
+                prev = self.pose_xy
         self.send_speed_cmd(0, 0)
 
     def run(self):
