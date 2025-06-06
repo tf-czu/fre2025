@@ -20,7 +20,6 @@ def cluster(points, radius=0.3):
 class Task3(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        bus.register('desired_steering')
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
