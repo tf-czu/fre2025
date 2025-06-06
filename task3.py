@@ -90,7 +90,7 @@ class Task3(Task1):
             diff = (diff + math.pi) % (2 * math.pi) - math.pi
             if abs(diff) < tolerance:
                 break
-            angular_speed = math.copysign(math.radians(45), diff
+            angular_speed = math.copysign(math.radians(45), diff)
             self.send_speed_cmd(0.1, angular_speed)
             
         self.send_speed_cmd(0, 0)
