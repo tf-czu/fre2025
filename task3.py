@@ -129,7 +129,7 @@ class Task3(Task1):
         self.drive_to_point((entry_x, entry_y))
 
         # Otočit se tangenciálně proti směru hodinových ručiček
-        tangent_angle = math.atan2(ux, -uy)
+        tangent_angle = math.atan2(-ux, uy)
         print(self.time, f'Otáčení do tangenciálního směru: {math.degrees(tangent_angle):.1f}°')
         self.turn_to_angle(tangent_angle)
 
