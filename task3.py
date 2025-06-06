@@ -4,6 +4,7 @@ import csv
 
 from osgar.node import Node
 from osgar.bus import BusShutdownException
+from osgar.platforms.matty import FRONT_REAR_AXIS_DISTANCE
 from task1 import Task1
 
 def cluster(points, radius=0.3):
@@ -27,9 +28,10 @@ class Task3(Task1):
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
 
         self.trees = [(3, 1)]
-        self.radius = 1.0
+        self.radius = 1.5
         self.steering_angle_deg = 16.7
-        self.steering_angle_rad = math.radians(self.steering_angle_deg) 
+        self.steering_angle_rad = math.radians(self.steering_angle_deg)
+        steering_angle_radius = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
