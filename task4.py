@@ -39,7 +39,7 @@ class Task4(Task1):
         print(self.time, 'Zatáčím vlevo o 90° během jízdy')
         dist = 0
         prev = self.pose_xy
-        arc_length = (math.pi * 0.75 / 2) / 2  # původně pro 180°, teď polovina pro 90°
+        arc_length = (math.pi * 0.70 / 2) / 2  # původně pro 180°, teď polovina pro 90°
         while dist < arc_length + 0.1:
             if self.update() == 'pose2d':
                 self.send_speed_cmd(self.max_speed, math.radians(45))
@@ -50,7 +50,7 @@ class Task4(Task1):
 
     def run(self):
         try:
-            length = 9.0
+            length = 3.0
             while length > 0:
                 for _ in range(3):
                     self.go_straight(length)
