@@ -29,9 +29,7 @@ class Task3(Task1):
 
         self.trees = [(3, 1)]
         self.radius = 1.5
-        self.steering_angle_deg = 16.7
-        self.steering_angle_rad = math.radians(self.steering_angle_deg)
-        steering_angle_radius = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
+        self.steering_angle_rad = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
