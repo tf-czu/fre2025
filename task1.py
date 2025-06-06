@@ -5,6 +5,7 @@ import math
 
 from osgar.node import Node
 from osgar.bus import BusShutdownException
+from datetime import timedelta
 
 
 class Task1(Node):
@@ -120,8 +121,15 @@ class Task1(Node):
                  prev = self.pose_xy
         self.send_speed_cmd(0, 0)
 
+    def wait(self,duration):
+        self.update()
+        start_time=self.time
+        while self.time - start_time < timedelta(seconds=duration):
+            self.update()
+        
     def run(self):
         try:
+            self.wait(10)
             for num in range(10):
                 self.navigate_row()
                 self.go_straight(1.0)
