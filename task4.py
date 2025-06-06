@@ -9,6 +9,7 @@ class Task4(Task1):
         super().__init__(config, bus)
         bus.register('desired_steering')
         bus.register('detections')
+        self.side_length = config.get('side_length', 3.0)
         self.detections = None
         self.fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         self.detected_fruits = []
@@ -50,7 +51,7 @@ class Task4(Task1):
 
     def run(self):
         try:
-            length = 3.0
+            length = self.side_length
             while length > 0:
                 for _ in range(3):
                     self.go_straight(length)
