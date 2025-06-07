@@ -37,7 +37,7 @@ class Task3(Task1):
 
         camera_height = 0.25
         vertical_fov = math.radians(55)
-        camera_tilt = math.radians(40)
+        camera_tilt = math.radians(68)
 
         fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         fruit = []
