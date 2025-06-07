@@ -137,6 +137,13 @@ class Task3(Task1):
         print(self.time, 'Začínám opisovat kružnici...')
         self.drive_circle_by_angle(self.steering_angle_rad, 360)
 
+        print(self.time, 'Popojíždím rovně o 1 metr od stromu...')
+        direction = self.pose_angle
+        x, y = self.pose_xy
+        target_x = x + math.cos(direction) * 1.0
+        target_y = y + math.sin(direction) * 1.0
+        self.drive_to_point((target_x, target_y))
+
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
             filename = "CULS-Robotics-task3.csv"
