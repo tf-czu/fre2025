@@ -2,6 +2,7 @@ import math
 import numpy as np
 from osgar.node import Node
 from osgar.bus import BusShutdownException
+from osgar.platforms.matty import FRONT_REAR_AXIS_DISTANCE
 from task1switch import Task1  # zdědí základní pohybové schopnosti
 
 class Task4(Task1):
@@ -38,16 +39,21 @@ class Task4(Task1):
 
     def turn_left_90deg(self):
         print(self.time, 'Zatáčím vlevo o 90° během jízdy')
+        self.send_speed_cmd(0, 0)
+        self.wait(2)
         dist = 0
         prev = self.pose_xy
-        arc_length = (math.pi * 0.70 / 2) / 2  # původně pro 180°, teď polovina pro 90°
+        joint_angle = math.radians(45)
+        radius = (FRONT_REAR_AXIS_DISTANCE/2) / math.tan(joint_angle/2)
+        arc_length = (math.pi * radius / 2)  # původně pro 180°, teď polovina pro 90°
         while dist < arc_length:
             if self.update() == 'pose2d':
-                self.send_speed_cmd(self.max_speed, math.radians(45))
+                self.send_speed_cmd(self.max_speed, joint_angle)
                 dist += math.hypot(prev[0] - self.pose_xy[0],
                                    prev[1] - self.pose_xy[1])
                 prev = self.pose_xy
         self.send_speed_cmd(0, 0)
+        self.wait(2)
 
     def run(self):
         try:
