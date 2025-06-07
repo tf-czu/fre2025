@@ -89,6 +89,7 @@
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
+      ["oak.depth", "app.depth"],
       ["wswitch.status", "app.status"]
     ]
   }
