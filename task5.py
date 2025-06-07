@@ -12,11 +12,15 @@ class Task5(Task1):
     def on_detections(self, data):
         pass
 
-    def send_sprayer(self, left, right):
-        if left:
+    def send_sprayer(self, sirene, left, right):
+        if sirene:
             self.publish('sprayer', b'*B1OS1H\r')
         else:
             self.publish('sprayer', b'*B1OS1L\r')
+        if left:
+            self.publish('sprayer', b'*B1OS2H\r')
+        else:
+            self.publish('sprayer', b'*B1OS2L\r')
         if right:
             self.publish('sprayer', b'*B1OS2H\r')
         else:
@@ -26,9 +30,9 @@ class Task5(Task1):
         try:
             self.send_speed_cmd(0, 0)
             self.wait(1.0)
-            self.send_sprayer(True, True)
+            self.send_sprayer(True, False, False)
             self.wait(1.0)
-            self.send_sprayer(False, False)
+            self.send_sprayer(False, False, False)
             self.wait(1.0)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
