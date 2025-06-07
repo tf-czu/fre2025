@@ -37,9 +37,9 @@
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
-            "fps": 10,
+            "fps": 8,
             "is_color": true,
-            "video_encoder": "mjpeg",
+            "video_encoder": "h264",
             "is_depth": true,
             "laser_projector_current": 0,
             "flood_light_current": 500,
