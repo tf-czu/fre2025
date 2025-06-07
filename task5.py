@@ -14,13 +14,13 @@ class Task5(Task1):
 
     def send_sprayer(self, left, right):
         if left:
-            self.publish('sprayer', br'*B1OS1H\r')
+            self.publish('sprayer', b'*B1OS1H\r')
         else:
-            self.publish('sprayer', br'*B1OS1L\r')
+            self.publish('sprayer', b'*B1OS1L\r')
         if right:
-            self.publish('sprayer', br'*B1OS2H\r')
+            self.publish('sprayer', b'*B1OS2H\r')
         else:
-            self.publish('sprayer', br'*B1OS2L\r')
+            self.publish('sprayer', b'*B1OS2L\r')
 
     def run(self):
         try:
