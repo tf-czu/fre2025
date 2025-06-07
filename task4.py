@@ -55,6 +55,12 @@ class Task4(Task1):
         self.send_speed_cmd(0, 0)
         self.wait(2)
 
+    def wait(self,duration):
+        self.update()
+        start_time=self.time
+        while self.time - start_time < timedelta(seconds=duration):
+            self.update()
+
     def run(self):
         try:
             length = self.side_length
