@@ -28,6 +28,7 @@ class Task5(Task1):
             self.wait(1.0)
             self.send_sprayer(True, True)
             self.wait(1.0)
-            self.send_sprayer(True, True)
+            self.send_sprayer(False, False)
+            self.wait(1.0)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
