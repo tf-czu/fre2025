@@ -22,9 +22,9 @@ class Task5(Task1):
         else:
             self.publish('sprayer', b'*B1OS2L\r')
         if right:
-            self.publish('sprayer', b'*B1OS2H\r')
+            self.publish('sprayer', b'*B1OS3H\r')
         else:
-            self.publish('sprayer', b'*B1OS2L\r')
+            self.publish('sprayer', b'*B1OS3L\r')
 
     def run(self):
         try:
