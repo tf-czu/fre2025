@@ -153,6 +153,7 @@ class Task1(Node):
                 self.turn_deg_right(180)
         except BusShutdownException:
             pass
+        self.send_sprayer(False, False, False)
 
     def draw(self):
         import matplotlib.pyplot as plt
