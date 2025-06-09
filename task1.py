@@ -41,7 +41,7 @@ class Task1(Node):
                 dist = int(np.percentile( data[line:line_end, index:box_width + index][mask], 5))
             else:
                 dist = 0
-            if False and self.time.total_seconds() > 18.49:
+            if False and self.time.total_seconds() > 27.34:
                 print(index, dist)
             arr.append(dist)
         center = len(arr) // 2
@@ -60,7 +60,9 @@ class Task1(Node):
                     direction = -self.turn_angle
                     break
 ##            print(self.time)
-        assert direction is not None, (self.time, arr)
+        if min(arr) > 1000:
+            self.navigate_in_row = False
+            self.end_of_row = self.pose_xy
         self.send_speed_cmd(self.max_speed, math.radians(direction))
         return self.navigate_in_row
             
