@@ -3,7 +3,7 @@
   "robot": {
     "modules": {
       "app": {
-        "driver": "task3:Task3",
+        "driver": "task5:Task5",
         "in": ["depth", "pose2d"],
         "out": ["desired_steering"],
         "init": {
@@ -34,10 +34,19 @@
           "speed": 115200
         }
       },
+      "serial_sprayer": {
+        "driver": "serial",
+        "in": ["raw"],
+        "out": ["raw"],
+        "init": {
+          "port": "/dev/sprayer",
+          "speed": 115200
+        }
+      },
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
-            "fps": 8,
+            "fps": 10,
             "is_color": true,
             "video_encoder": "h264",
             "is_depth": true,
@@ -58,35 +67,33 @@
             "stereo_left_right_check": true,
 
             "model": {
-                  "blob": "models/fruits640352.blob"
+                  "blob": "models/strawberries.blob"
             },
             "nn_config": {
-                  "output_format": "detection",
-                  "NN_family": "YOLO",
-                  "input_size": "640x352",
-                  "NN_specific_metadata": {
-                      "classes": 5,
-                      "coordinates": 4,
-                      "anchors": [],
-                      "anchor_masks": {},
-                      "iou_threshold": 0.5,
-                      "confidence_threshold": 0.5
-                  }
-             },
-         "mappings": {
-             "labels": [
-             "apple",
-             "banana",
-             "grape",
-             "lemon",
-             "orange"
-         ]
+                "output_format": "detection",
+                "NN_family": "YOLO",
+                "input_size": "640x352",
+                "NN_specific_metadata": {
+                    "classes": 2,
+                    "coordinates": 4,
+                    "anchors": [],
+                    "anchor_masks": {},
+                    "iou_threshold": 0.5,
+                    "confidence_threshold": 0.5
+                }
+            },
+        "mappings": {
+            "labels": [
+            "strawberries",
+            "strawberry"
+        ]
             }
           }
       }
     },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
+      ["app.sprayer", "serial_sprayer.raw"],
       ["platform.pose2d", "app.pose2d"],
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],

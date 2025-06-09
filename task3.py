@@ -27,8 +27,8 @@ class Task3(Task1):
         self.start_angle = None
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
 
-        self.trees = [(3, 1)]
-        self.radius = 1.5
+        self.trees = [(3.5, 2.3)]
+        self.radius = 1.20
         self.steering_angle_rad = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
 
     def on_detections(self, data):
@@ -37,7 +37,7 @@ class Task3(Task1):
 
         camera_height = 0.25
         vertical_fov = math.radians(55)
-        camera_tilt = math.radians(40)
+        camera_tilt = math.radians(68)
 
         fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         fruit = []
@@ -136,6 +136,13 @@ class Task3(Task1):
         # Obkroužit celý strom
         print(self.time, 'Začínám opisovat kružnici...')
         self.drive_circle_by_angle(self.steering_angle_rad, 360)
+
+        print(self.time, 'Popojíždím rovně o 1 metr od stromu...')
+        direction = self.pose_angle
+        x, y = self.pose_xy
+        target_x = x + math.cos(direction) * 1.0
+        target_y = y + math.sin(direction) * 1.0
+        self.drive_to_point((target_x, target_y))
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:

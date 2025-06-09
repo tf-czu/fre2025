@@ -2,6 +2,7 @@
   FRE2025 - TASK1
 """
 import math
+import numpy as np
 
 from osgar.node import Node
 from osgar.bus import BusShutdownException
@@ -23,8 +24,50 @@ class Task1(Node):
 
     def on_depth(self, data):
         self.depth = data
-
+        
     def navigate_row_step(self, data):
+        """
+        Navigate single step in the row of maize
+        :param data: depth data
+        :return: True if still in row
+        """
+        line = 400//2
+        line_end = 400//2 + 30
+        box_width = 160
+        arr = []
+        for index in range(0 , 641 - box_width, 20):
+            mask = data[line:line_end, index:box_width + index] != 0
+            if mask.max():
+                dist = int(np.percentile( data[line:line_end, index:box_width + index][mask], 5))
+            else:
+                dist = 0
+            if False and self.time.total_seconds() > 27.34:
+                print(index, dist)
+            arr.append(dist)
+        center = len(arr) // 2
+        direction = 0 ##  když nemůžeš jeď
+        if arr [center] > 1000:
+            direction = 0
+        else:
+            #nemůže jet rovně 
+            for i in range(1, center):
+                if arr [center - i] > 1000 and arr [center + i] <= 1000:
+                    # volno vlevo                    
+                    direction = self.turn_angle
+                    break
+                elif arr [center - i] <= 1000 and arr [center + i] > 1000:
+                    # volno pravo                   
+                    direction = -self.turn_angle
+                    break
+##            print(self.time)
+        if min(arr) > 1000:
+            self.navigate_in_row = False
+            self.end_of_row = self.pose_xy
+        self.send_speed_cmd(self.max_speed, math.radians(direction))
+        return self.navigate_in_row
+            
+
+    def old_navigate_row_step(self, data):
         """
         Navigate single step in the row of maize
         :param data: depth data
@@ -129,7 +172,7 @@ class Task1(Node):
         
     def run(self):
         try:
-            self.wait(10)
+            self.wait(15)
             for num in range(10):
                 self.navigate_row()
                 self.go_straight(1.0)

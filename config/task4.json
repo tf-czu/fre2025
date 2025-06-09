@@ -7,7 +7,8 @@
         "in": ["pose2d", "detections"],
         "out": ["desired_steering"],
         "init": {
-          "max_speed": 0.2
+          "max_speed": 0.2,
+          "side_length": 3.0
         }
       },
       "platform": {
@@ -38,14 +39,22 @@
         "init": {
           "fps": 10,
           "is_color": true,
+          "video_encoder": "h264",
           "is_depth": true,
           "laser_projector_current": 1200,
+          "flood_light_current": 500,
+          "is_imu_enabled": true,
+          "number_imu_records": 10,
+          "disable_magnetometer_fusion": false,
+          
           "mono_resolution": "THE_400_P",
           "color_resolution": "THE_1080_P",
           "color_manual_focus": 130,
+          
           "stereo_median_filter": "KERNEL_3x3",
           "stereo_mode": "HIGH_ACCURACY",
           "stereo_left_right_check": true,
+          
           "model": {
             "blob": "models/fruits640352.blob"
           },
@@ -56,6 +65,8 @@
             "NN_specific_metadata": {
               "classes": 5,
               "coordinates": 4,
+              "anchors": [],
+              "anchor_masks": {},
               "iou_threshold": 0.5,
               "confidence_threshold": 0.5
             }
@@ -78,6 +89,7 @@
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
+      ["oak.depth", "app.depth"],
       ["wswitch.status", "app.status"]
     ]
   }
