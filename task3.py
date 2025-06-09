@@ -27,7 +27,7 @@ class Task3(Task1):
         self.start_angle = None
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
 
-        self.trees = [(3.5, 2.3)]
+        self.trees = [(3,1)]
         self.radius = 1.20
         self.steering_angle_rad = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
 
@@ -135,7 +135,7 @@ class Task3(Task1):
 
         # Obkroužit celý strom
         print(self.time, 'Začínám opisovat kružnici...')
-        self.drive_circle_by_angle(self.steering_angle_rad, 360)
+        self.drive_circle_by_angle(self.steering_angle_rad, 450)
 
         print(self.time, 'Popojíždím rovně o 1 metr od stromu...')
         direction = self.pose_angle
