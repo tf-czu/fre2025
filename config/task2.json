@@ -34,6 +34,16 @@
           "speed": 115200
         }
       },
+
+      "serial_sprayer": {
+        "driver": "serial",
+        "in": ["raw"],
+        "out": ["raw"],
+        "init": {
+          "port": "/dev/sprayer",
+          "speed": 115200
+        }
+      },
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
@@ -84,10 +94,12 @@
     },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
+      ["app.sprayer", "serial_sprayer.raw"],
       ["platform.pose2d", "app.pose2d"],
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
+      ["timer.tick", "app.tick"],
       ["oak.depth", "app.depth"],
       ["oak.detections", "app.detections"]
     ]
