@@ -45,7 +45,7 @@ class Task1(Node):
                 print(index, dist)
             arr.append(dist)
         center = len(arr) // 2
-        direction = None
+        direction = 0 ##  když nemůžeš jeď
         if arr [center] > 1000:
             direction = 0
         else:
