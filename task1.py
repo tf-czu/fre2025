@@ -41,13 +41,35 @@ class Task1(Node):
                 dist = int(np.percentile( data[line:line_end, index:box_width + index][mask], 5))
             else:
                 dist = 0
-            if False and self.time.total_seconds() > 27.34:
+            if self.verbose and 70 < self.time.total_seconds() < 71.00:
                 print(index, dist)
             arr.append(dist)
         center = len(arr) // 2
-        direction = 0 ##  když nemůžeš jeď
+        direction = 0 ##  když nemůžeš jet
         if arr [center] > 1000:
+            #může jet rovně
             direction = 0
+            left = 0
+            for i in range(0, center):
+                if arr [center - i] > 1000:
+                    left = i
+                else:
+                    break
+            right = 0
+            for i in range(0, center):
+                if arr [center + i] > 1000:
+                    right = i
+                else:
+                    break
+            if self.verbose:
+                print(self.time, left, right)
+            if left <= 2 or right <= 2:
+                if left >= 5:
+                    ## pravá je blízko
+                    direction = self.turn_angle // 2
+                if right >= 5:
+                    ## levá je blízko
+                    direction = -self.turn_angle // 2    
         else:
             #nemůže jet rovně 
             for i in range(1, center):
