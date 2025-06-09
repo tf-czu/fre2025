@@ -26,7 +26,6 @@ class Task2(Task1):
 
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        bus.register('sprayer')
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)

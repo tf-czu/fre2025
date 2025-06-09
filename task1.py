@@ -12,7 +12,7 @@ from datetime import timedelta
 class Task1(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        bus.register('desired_steering')
+        bus.register('desired_steering', 'sprayer')
         self.max_speed = config.get('max_speed', 0.2)
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
