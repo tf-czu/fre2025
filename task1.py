@@ -41,8 +41,8 @@ class Task1(Node):
                 dist = int(np.percentile( data[line:line_end, index:box_width + index][mask], 5))
             else:
                 dist = 0
-##            if self.time.total_seconds() > 17.366:
-##                print(index, dist)
+            if False and self.time.total_seconds() > 18.49:
+                print(index, dist)
             arr.append(dist)
         center = len(arr) // 2
         direction = None
@@ -54,9 +54,11 @@ class Task1(Node):
                 if arr [center - i] > 1000 and arr [center + i] <= 1000:
                     # volno vlevo                    
                     direction = self.turn_angle
+                    break
                 elif arr [center - i] <= 1000 and arr [center + i] > 1000:
                     # volno pravo                   
-                    direction = -self.turn_angle    
+                    direction = -self.turn_angle
+                    break
 ##            print(self.time)
         assert direction is not None, (self.time, arr)
         self.send_speed_cmd(self.max_speed, math.radians(direction))
