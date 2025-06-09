@@ -61,37 +61,37 @@ class Task2(Task1):
 
     def on_tick(self, data):
         if self.center:
-           honk = False
-           left = False
-           right = False
-           travelled_dist = self.pose_xy[0] - self.prev_pose[0] 
+            honk = False
+            left = False
+            right = False
+            travelled_dist = self.pose_xy[0] - self.prev_pose[0]
 
-           if abs(travelled_dist) > 0.01:
-               if travelled_dist > 0:
-                   pose_leftspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] + 0.3)
-                   pose_rightspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] - 0.3)
-               else: 
-                   pose_leftspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] - 0.3)
-                   pose_rightspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] + 0.3)
-                    
-               self.prev_pose = self.pose_xy
-               
-           else:
-               return
-                            
-           for c in self.center:
-               distance_left = math.hypot(c[0] - pose_leftspray[0], c[1] - pose_leftspray[1])
-               distance_right = math.hypot(c[0] - pose_rightspray[0], c[1] - pose_rightspray[1])
-               if distance_left < 0.2:
-                   honk = True
-                   left = True
-               if distance_right < 0.2:
-                   honk = True
-                   right = True
-                                   
-           self.send_sprayer(honk, left, right)
-           if self.verbose:
-               print("Honk!", honk, left, right, distance_left, distance_right)           
+            if abs(travelled_dist) > 0.01:
+                if travelled_dist > 0:
+                    pose_leftspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] + 0.3)
+                    pose_rightspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] - 0.3)
+                else:
+                    pose_leftspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] - 0.3)
+                    pose_rightspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] + 0.3)
+
+                self.prev_pose = self.pose_xy
+
+            else:
+                return
+
+            for c in self.center:
+                distance_left = math.hypot(c[0] - pose_leftspray[0], c[1] - pose_leftspray[1])
+                distance_right = math.hypot(c[0] - pose_rightspray[0], c[1] - pose_rightspray[1])
+                if distance_left < 0.2:
+                    honk = True
+                    left = True
+                if distance_right < 0.2:
+                    honk = True
+                    right = True
+                if self.verbose:
+                    print("Honk!", honk, left, right, distance_left, distance_right)
+
+            self.send_sprayer(honk, left, right)
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
