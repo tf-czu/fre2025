@@ -129,7 +129,7 @@ class Task1(Node):
         
     def run(self):
         try:
-            self.wait(10)
+            self.wait(15)
             for num in range(10):
                 self.navigate_row()
                 self.go_straight(1.0)
