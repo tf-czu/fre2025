@@ -121,6 +121,20 @@ class Task1(Node):
                  prev = self.pose_xy
         self.send_speed_cmd(0, 0)
 
+    def send_sprayer(self, sirene, left, right):
+        if sirene:
+            self.publish('sprayer', b'*B1OS1H\r')
+        else:
+            self.publish('sprayer', b'*B1OS1L\r')
+        if left:
+            self.publish('sprayer', b'*B1OS2H\r')
+        else:
+            self.publish('sprayer', b'*B1OS2L\r')
+        if right:
+            self.publish('sprayer', b'*B1OS3H\r')
+        else:
+            self.publish('sprayer', b'*B1OS3L\r')
+
     def wait(self,duration):
         self.update()
         start_time=self.time
