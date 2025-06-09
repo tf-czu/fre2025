@@ -30,6 +30,7 @@ class Task2(Task1):
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
         self.save_csv_if_enabled([]) #create empty file
+        self.center = None
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
@@ -54,8 +55,17 @@ class Task2(Task1):
         self.detections = fruit
         if len(self.detections) > 0:
             radius = 0.2
-            center = cluster(self.fruits, radius)
-            self.save_csv_if_enabled(center)
+            self.center = cluster(self.fruits, radius)
+            self.save_csv_if_enabled(self.center)
+
+    def on_tick(self, data):
+        if self.center:
+           honk = False 
+           for c in self.center:
+               if math.hypot(c[0] - self.pose_xy[0], c[1] - self.pose_xy[1]) < 0.5:
+                  honk = True
+           self.send_sprayer(honk, False, False)
+           print("Honk!", honk)           
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
