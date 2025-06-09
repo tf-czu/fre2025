@@ -61,12 +61,22 @@ class Task2(Task1):
 
     def on_tick(self, data):
         if self.center:
-           honk = False 
+           honk = False
+           left = False
+           right = False
            for c in self.center:
-               if math.hypot(c[0] - self.pose_xy[0], c[1] - self.pose_xy[1]) < 0.5:
+               distance = math.hypot(c[0] - self.pose_xy[0], c[1] - self.pose_xy[1])
+               if distance < 0.5:
                   honk = True
-           self.send_sprayer(honk, False, False)
-           print("Honk!", honk)           
+                  if c[1] - self.pose_xy[1] > 0:
+                      left = True
+                  else:
+                      right = True
+                  break
+                   
+           self.send_sprayer(honk, left, right)
+           if self.verbose:
+               print("Honk!", honk, left, right, distance)           
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
