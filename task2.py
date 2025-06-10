@@ -69,11 +69,11 @@ class Task2(Task1):
 
             if abs(travelled_dist) > 0.01:
                 if travelled_dist > 0:
-                    pose_leftspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] + 0.3)
-                    pose_rightspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] - 0.3)
+                    pose_leftspray = (self.pose_xy[0] - 0.30, self.pose_xy[1] + 0.3)
+                    pose_rightspray = (self.pose_xy[0] - 0.30, self.pose_xy[1] - 0.3)
                 else:
-                    pose_leftspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] - 0.3)
-                    pose_rightspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] + 0.3)
+                    pose_leftspray = (self.pose_xy[0] + 0.30, self.pose_xy[1] - 0.3)
+                    pose_rightspray = (self.pose_xy[0] + 0.30, self.pose_xy[1] + 0.3)
 
                 self.prev_pose = self.pose_xy
 
