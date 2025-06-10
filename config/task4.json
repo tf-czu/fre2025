@@ -7,8 +7,8 @@
         "in": ["pose2d", "detections"],
         "out": ["desired_steering"],
         "init": {
-          "max_speed": 0.2,
-          "side_length": 3.0
+          "max_speed": 0.5,
+          "side_length": 8.0
         }
       },
       "platform": {
