@@ -26,6 +26,7 @@ class Task2(Task1):
 
     def __init__(self, config, bus):
         super().__init__(config, bus)
+        bus.register('sprayer')
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
@@ -147,7 +148,5 @@ class Task2(Task1):
         plt.title('Reprezentativní bod shluku')
         plt.grid(True, linestyle='--', color='gray', alpha=0.6)
         plt.show()
-
-
 
 # vim: expandtab sw=4 ts=4
