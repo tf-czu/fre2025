@@ -89,7 +89,6 @@
         ]
             }
           }
-      }
     },
       "wswitch": {
         "driver": "wswitch:WebPageSwitch",
