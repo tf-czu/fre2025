@@ -26,12 +26,21 @@ class Task4(Task1):
     def go_straight(self, dist):
         print(self.time, f'Jedu rovně {dist} m')
         start = self.pose_xy
+        start_heading = self.pose_angle
         while True:
             if self.update() == 'pose2d':
                 dx = self.pose_xy[0] - start[0]
                 dy = self.pose_xy[1] - start[1]
                 if math.hypot(dx, dy) < dist:
-                    self.send_speed_cmd(self.max_speed, 0)
+                    diff = self.pose_angle - start_heading
+##                    assert abs(diff) < math.radians(1), self.time
+                    if abs(diff) < math.radians(1):
+                        self.send_speed_cmd(self.max_speed, 0)
+                    else:
+                        if diff > 0:
+                            self.send_speed_cmd(self.max_speed, -math.radians(self.turn_angle))
+                        else:
+                            self.send_speed_cmd(self.max_speed, math.radians(self.turn_angle))  
                 else:
                     self.send_speed_cmd(0, 0)
                     break
@@ -51,7 +60,7 @@ class Task4(Task1):
                                    prev[1] - self.pose_xy[1])
                 prev = self.pose_xy
         self.send_speed_cmd(0, 0)
-##        assert 0, (start_heading, self.pose_angle)
+##        assert 0, (start_heading, self.pose_angle, self.time)
 
     def wait(self,duration):
         self.update()

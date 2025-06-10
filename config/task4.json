@@ -8,7 +8,8 @@
         "out": ["desired_steering"],
         "init": {
           "max_speed": 0.5,
-          "side_length": 8.0
+          "side_length": 8.0,
+          "turn_angle": 40
         }
       },
       "platform": {
