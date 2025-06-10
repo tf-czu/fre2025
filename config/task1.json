@@ -51,7 +51,7 @@
           "stereo_subpixel": false,
           "stereo_left_right_check": true
         }
-      }
+      },
       "wswitch": {
         "driver": "wswitch:WebPageSwitch",
         "in": [],
