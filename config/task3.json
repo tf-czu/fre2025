@@ -83,6 +83,12 @@
          ]
             }
           }
+    },
+      "wswitch": {
+        "driver": "wswitch:WebPageSwitch",
+        "in": [],
+        "out": ["status"],
+        "init": {}
       }
     },
     "links": [
@@ -92,7 +98,8 @@
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
-      ["oak.detections", "app.detections"]
+      ["oak.detections", "app.detections"],
+      ["wswitch.status", "app.status"]
     ]
   }
 }
