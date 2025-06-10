@@ -102,6 +102,20 @@ class Task2(Task1):
                 writer.writerows(centroid)
             print(f"Uloženo do souboru: {filename}")
 
+    def send_sprayer(self, sirene, left, right):
+        if sirene:
+            self.publish('sprayer', b'*B1OS1H\r')
+        else:
+            self.publish('sprayer', b'*B1OS1L\r')
+        if left:
+            self.publish('sprayer', b'*B1OS4H\r')
+        else:
+            self.publish('sprayer', b'*B1OS4L\r')
+        if right:
+            self.publish('sprayer', b'*B1OS3H\r')
+        else:
+            self.publish('sprayer', b'*B1OS3L\r')
+
     def draw(self):
         from matplotlib.patches import Circle
         import matplotlib.pyplot as plt
