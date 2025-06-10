@@ -3,7 +3,7 @@ import numpy as np
 from osgar.node import Node
 from osgar.bus import BusShutdownException
 from osgar.platforms.matty import FRONT_REAR_AXIS_DISTANCE
-from task1switch import Task1
+from task1 import Task1
 from datetime import timedelta# zdědí základní pohybové schopnosti
 
 class Task4(Task1):
