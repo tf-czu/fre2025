@@ -18,6 +18,7 @@ class Task1(Node):
         self.verbose = False
         self.debug_arr = []
         self.end_of_row = None
+        self.end_count = 0
         self.pose_xy = (0, 0)
         self.pose_angle = 0
         self.depth = None
@@ -41,13 +42,35 @@ class Task1(Node):
                 dist = int(np.percentile( data[line:line_end, index:box_width + index][mask], 5))
             else:
                 dist = 0
-            if False and self.time.total_seconds() > 27.34:
+            if self.verbose and 38 < self.time.total_seconds() < 47:
                 print(index, dist)
             arr.append(dist)
         center = len(arr) // 2
-        direction = 0 ##  když nemůžeš jeď
+        direction = 0 ##  když nemůžeš jet
         if arr [center] > 1000:
+            #může jet rovně
             direction = 0
+            left = 0
+            for i in range(0, center):
+                if arr [center - i] > 1000:
+                    left = i
+                else:
+                    break
+            right = 0
+            for i in range(0, center):
+                if arr [center + i] > 1000:
+                    right = i
+                else:
+                    break
+            if self.verbose:
+                print(self.time, left, right)
+            if left <= 2 or right <= 2:
+                if left >= 5:
+                    ## pravá je blízko
+                    direction = self.turn_angle // 2
+                if right >= 5:
+                    ## levá je blízko
+                    direction = -self.turn_angle // 2    
         else:
             #nemůže jet rovně 
             for i in range(1, center):
@@ -61,8 +84,12 @@ class Task1(Node):
                     break
 ##            print(self.time)
         if min(arr) > 1000:
-            self.navigate_in_row = False
-            self.end_of_row = self.pose_xy
+            self.end_count += 1
+            if self.end_count >= 10:
+                self.navigate_in_row = False
+                self.end_of_row = self.pose_xy
+        else:
+            self.end_count = 0    
         self.send_speed_cmd(self.max_speed, math.radians(direction))
         return self.navigate_in_row
             
@@ -124,6 +151,7 @@ class Task1(Node):
     def navigate_row(self):
         print(self.time, 'navigate_row')
         self.navigate_in_row = True
+        self.end_count = 0
         while True:
             if self.update() == 'depth':
                 if not self.navigate_row_step(self.depth):
@@ -136,7 +164,7 @@ class Task1(Node):
             if self.update() == 'depth':
                 if math.hypot(self.end_of_row[0] - self.pose_xy[0],
                               self.end_of_row[1] - self.pose_xy[1]) < dist:
-                    self.send_speed_cmd(self.max_speed, 0)
+                    self.send_speed_cmd(0.3, 0)
                 else:
                     self.send_speed_cmd(0, 0)
                     break
@@ -146,7 +174,7 @@ class Task1(Node):
         prev = self.pose_xy
         while dist < 3.14*0.75/2:
             if self.update() == 'pose2d':
-                 self.send_speed_cmd(self.max_speed, math.radians (45))
+                 self.send_speed_cmd(0.2, math.radians (45))
                  dist += math.hypot(prev[0] - self.pose_xy[0],
                               prev[1] - self.pose_xy[1])
                  prev = self.pose_xy
@@ -158,7 +186,7 @@ class Task1(Node):
         prev = self.pose_xy
         while dist < 3.14*0.75/2:
             if self.update() == 'pose2d':
-                 self.send_speed_cmd(self.max_speed, math.radians (-45))
+                 self.send_speed_cmd(0.2, math.radians (-45))
                  dist += math.hypot(prev[0] - self.pose_xy[0],
                               prev[1] - self.pose_xy[1])
                  prev = self.pose_xy
@@ -189,10 +217,10 @@ class Task1(Node):
             self.wait(15)
             for num in range(10):
                 self.navigate_row()
-                self.go_straight(1.0)
+                self.go_straight(0.5)
                 self.turn_deg_left(180)
                 self.navigate_row()
-                self.go_straight(1.0)
+                self.go_straight(0.5)
                 self.turn_deg_right(180)
         except BusShutdownException:
             pass
