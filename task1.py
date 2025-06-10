@@ -13,6 +13,7 @@ class Task1(Node):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register('desired_steering')
+        self.enabled = False
         self.max_speed = config.get('max_speed', 0.2)
         self.turn_angle = config.get('turn_angle', 20)
         self.verbose = False
@@ -25,6 +26,9 @@ class Task1(Node):
 
     def on_depth(self, data):
         self.depth = data
+
+    def on_status(self, data):
+        self.enabled = data
         
     def navigate_row_step(self, data):
         """
@@ -143,6 +147,9 @@ class Task1(Node):
         self.pose_angle = math.radians(data[2]/100)
 
     def send_speed_cmd(self, speed, steering_angle):
+        if not self.enabled:
+            speed = 0
+            steering_angle = 0
         return self.bus.publish(
             'desired_steering',
             [round(speed*1000), round(math.degrees(steering_angle)*100)]
@@ -191,7 +198,7 @@ class Task1(Node):
                               prev[1] - self.pose_xy[1])
                  prev = self.pose_xy
         self.send_speed_cmd(0, 0)
-        
+
     def wait(self,duration):
         self.update()
         start_time=self.time
@@ -227,3 +234,4 @@ class Task1(Node):
 
 
 # vim: expandtab sw=4 ts=4
+
