@@ -40,16 +40,18 @@ class Task4(Task1):
         print(self.time, 'Zatáčím vlevo o 90° během jízdy')
         dist = 0
         prev = self.pose_xy
+        start_heading = self.pose_angle
         joint_angle = math.radians(45)
         radius = (FRONT_REAR_AXIS_DISTANCE/2) / math.tan(joint_angle/2)
         arc_length = (math.pi * radius / 2)  # původně pro 180°, teď polovina pro 90°
-        while dist < arc_length:
+        while self.pose_angle - start_heading < math.pi / 2:
             if self.update() == 'pose2d':
                 self.send_speed_cmd(0.2, joint_angle)
                 dist += math.hypot(prev[0] - self.pose_xy[0],
                                    prev[1] - self.pose_xy[1])
                 prev = self.pose_xy
         self.send_speed_cmd(0, 0)
+##        assert 0, (start_heading, self.pose_angle)
 
     def wait(self,duration):
         self.update()
