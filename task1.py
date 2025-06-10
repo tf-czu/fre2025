@@ -191,7 +191,7 @@ class Task1(Node):
                               prev[1] - self.pose_xy[1])
                  prev = self.pose_xy
         self.send_speed_cmd(0, 0)
-
+        
     def wait(self,duration):
         self.update()
         start_time=self.time

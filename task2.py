@@ -26,10 +26,13 @@ class Task2(Task1):
 
     def __init__(self, config, bus):
         super().__init__(config, bus)
+        bus.register('sprayer')
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
         self.save_csv_if_enabled([]) #create empty file
+        self.center = None
+        self.prev_pose = (0, 0)
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
@@ -54,8 +57,42 @@ class Task2(Task1):
         self.detections = fruit
         if len(self.detections) > 0:
             radius = 0.2
-            center = cluster(self.fruits, radius)
-            self.save_csv_if_enabled(center)
+            self.center = cluster(self.fruits, radius)
+            self.save_csv_if_enabled(self.center)
+
+    def on_tick(self, data):
+        if self.center:
+            honk = False
+            left = False
+            right = False
+            travelled_dist = self.pose_xy[0] - self.prev_pose[0]
+
+            if abs(travelled_dist) > 0.01:
+                if travelled_dist > 0:
+                    pose_leftspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] + 0.3)
+                    pose_rightspray = (self.pose_xy[0] - 0.65, self.pose_xy[1] - 0.3)
+                else:
+                    pose_leftspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] - 0.3)
+                    pose_rightspray = (self.pose_xy[0] + 0.65, self.pose_xy[1] + 0.3)
+
+                self.prev_pose = self.pose_xy
+
+            else:
+                return
+
+            for c in self.center:
+                distance_left = math.hypot(c[0] - pose_leftspray[0], c[1] - pose_leftspray[1])
+                distance_right = math.hypot(c[0] - pose_rightspray[0], c[1] - pose_rightspray[1])
+                if distance_left < 0.2:
+                    honk = True
+                    left = True
+                if distance_right < 0.2:
+                    honk = True
+                    right = True
+                if self.verbose:
+                    print("Honk!", honk, left, right, distance_left, distance_right)
+
+            self.send_sprayer(honk, left, right)
 
     def save_csv_if_enabled(self, centroid):
         if self.output_csv_enabled:
@@ -65,6 +102,20 @@ class Task2(Task1):
                 writer.writerow(['x', 'y'])  # hlavička
                 writer.writerows(centroid)
             print(f"Uloženo do souboru: {filename}")
+
+    def send_sprayer(self, sirene, left, right):
+        if sirene:
+            self.publish('sprayer', b'*B1OS1H\r')
+        else:
+            self.publish('sprayer', b'*B1OS1L\r')
+        if left:
+            self.publish('sprayer', b'*B1OS4H\r')
+        else:
+            self.publish('sprayer', b'*B1OS4L\r')
+        if right:
+            self.publish('sprayer', b'*B1OS3H\r')
+        else:
+            self.publish('sprayer', b'*B1OS3L\r')
 
     def draw(self):
         from matplotlib.patches import Circle
@@ -97,7 +148,5 @@ class Task2(Task1):
         plt.title('Reprezentativní bod shluku')
         plt.grid(True, linestyle='--', color='gray', alpha=0.6)
         plt.show()
-
-
 
 # vim: expandtab sw=4 ts=4
