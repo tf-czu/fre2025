@@ -38,20 +38,27 @@ class Task3(Task1):
         vertical_fov = math.radians(55)
         camera_tilt = math.radians(68)
 
+        # to be removed
+        assert self.depth.shape == (400, 640), self.depth.shape
+        my_depth = self.depth
+        my_depth[my_depth > 3000] = 0  # remove too far values
+
         fruit_types = {"apple", "banana", "lemon", "orange", "grape"}
         fruit = []
         for det in data:
+            if self.verbose:
+                print("Detections: ", det)
             fruit_type = det[0]
             if fruit_type in fruit_types:
-                x1, y1, x2, y2 = det[2]
+                x1, y1, x2, y2 = det[2]  # values between 0 and 1
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
-                beta = (0.5 - x_center) * math.radians(69)
+                beta = (0.5 - x_center) * math.radians(69)  # 69 vertical FOV
                 alpha = self.pose_angle
-                mask = self.depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)] != 0
+                mask = my_depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)] != 0
                 if not np.any(mask):
                     continue
-                dist = np.median(self.depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)][mask]) / 1000
+                dist = np.median(my_depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)][mask]) / 1000
                 x_fruit = self.pose_xy[0] + dist * math.cos(alpha + beta)
                 y_fruit = self.pose_xy[1] + dist * math.sin(alpha + beta)
                 theta = camera_tilt + (0.5 - y_center) * vertical_fov
