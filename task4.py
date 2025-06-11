@@ -101,9 +101,17 @@ class Task4(Task1):
                 writer.writerows(centroid)
             if len (centroid) == 0:
                 print(f"Uloženo do souboru: {filename}")
-
+                
+    def wait_for_camera(self):
+        self.update()
+        print(self.time, "Čekám na kameru")
+        while self.depth is None:
+            self.update()
+        print(self.time, "Kamera k dispozici")
+     
     def run(self):
         try:
+            self.wait_for_camera() 
             length = self.side_length
             while length > 0:
                 for _ in range(3):
