@@ -2,15 +2,16 @@
   "version": 2,
   "robot": {
     "modules": {
+
       "app": {
-        "driver": "task5:Task5",
+        "driver": "task5_red:Task5RED",
         "in": ["depth", "pose2d"],
         "out": ["desired_steering"],
         "init": {
-          "max_speed": 0.2,
-	  "outputcsv": true
+          "max_speed": 0.4
         }
       },
+
       "platform": {
         "driver": "osgar.platforms.matty:Matty",
         "in": ["esp_data"],
@@ -34,19 +35,11 @@
           "speed": 115200
         }
       },
-      "serial_sprayer": {
-        "driver": "serial",
-        "in": ["raw"],
-        "out": ["raw"],
-        "init": {
-          "port": "/dev/sprayer",
-          "speed": 115200
-        }
-      },
+
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
-            "fps": 10,
+            "fps": 8,
             "is_color": true,
             "video_encoder": "h264",
             "is_depth": true,
@@ -89,11 +82,18 @@
         ]
             }
           }
+      },
+
+      "to_green": {
+          "driver": "osgar.drivers.push:Push",
+          "init": {
+            "endpoint": "tcp://192.168.48.155:5555"
+          }
       }
+
     },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
-      ["app.sprayer", "serial_sprayer.raw"],
       ["platform.pose2d", "app.pose2d"],
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],
