@@ -90,7 +90,15 @@
         "in": [],
         "out": ["status"],
         "init": {}
+      },
+
+      "localization": {
+        "driver": "odoimuloc:Localization",
+        "in": [],
+        "out": [],
+        "init": {}
       }
+
     },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
@@ -100,7 +108,10 @@
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
       ["oak.detections", "app.detections"],
-      ["wswitch.status", "app.status"]
+      ["wswitch.status", "app.status"],
+
+      ["platform.pose2d", "localization.odom"],
+      ["oak.orientation_list", "localization.orientation"]
     ]
   }
 }
