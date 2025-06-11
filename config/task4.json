@@ -83,12 +83,6 @@
         "driver": "wswitch:WebPageSwitch",
         "out": ["status"],
         "init": {}
-      },
-      "localization": {
-        "driver": "odoimuloc:Localization",
-        "in": [],
-        "out": [],
-        "init": {}
       }
     },
     "links": [
@@ -99,9 +93,7 @@
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
-      ["wswitch.status", "app.status"],
-      ["platform.pose2d", "localization.odom"],
-      ["oak.orientation_list", "localization.orientation"]
+      ["wswitch.status", "app.status"]
     ]
   }
 }
