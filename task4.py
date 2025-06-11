@@ -16,6 +16,7 @@ class Task4(Task1):
         self.side_length = config.get('side_length', 7.0)
         self.detections = None
         self.fruits = []
+        self.detect_radius = 0.5
         self.output_csv_enabled = config.get('outputcsv', True)
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
 
@@ -41,8 +42,7 @@ class Task4(Task1):
                         fruit.append(det)
         self.detections = fruit
         if len(self.detections) > 0:
-            radius = 0.2
-            self.center = cluster(self.fruits, radius)
+            self.center = cluster(self.fruits, self.detect_radius)
             self.save_csv_if_enabled(self.center)
 
     def go_straight(self, dist):
@@ -118,17 +118,19 @@ class Task4(Task1):
         fig, ax = plt.subplots()
         for x_center, y_center in self.fruits:
             ax.scatter(x_center, y_center)
-
+        # playground 10x10             
+        for x_center, y_center in [[0, 0], [10, 10]]:
+            ax.scatter(x_center, y_center)
+            
         if not self.fruits:
             print("Žádné body k zobrazení nebo exportu.")
             return
 
        #  points = np.array(self.fruits)
        #  center = points.mean(axis=0)  # centroid (průměrný bod)
-        radius = 0.2
-        center = cluster(self.fruits, radius)
+        center = cluster(self.fruits, self.detect_radius)
         for c in center:
-            circle = Circle(c, radius, fill=False, edgecolor='r', linestyle='--')
+            circle = Circle(c, self.detect_radius, fill=False, edgecolor='r', linestyle='--')
             ax.add_patch(circle)
             ax.set_aspect('equal')
             ax.scatter(x_center, y_center)
