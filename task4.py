@@ -132,7 +132,7 @@ class Task4(Task1):
      
     def run(self):
         try:
-##            self.wait_for_camera() 
+            self.wait_for_camera() 
             length = self.side_length
             while length > 0:
                 for _ in range(3):
