@@ -13,7 +13,7 @@ from datetime import timedelta# zdědí základní pohybové schopnosti
 class Task4(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        self.side_length = config.get('side_length', 8.0)
+        self.side_length = config.get('side_length', 7.0)
         self.detections = None
         self.fruits = []
         self.output_csv_enabled = config.get('outputcsv', True)
