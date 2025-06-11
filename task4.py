@@ -14,6 +14,7 @@ class Task4(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         self.side_length = config.get('side_length', 7.0)
+        self.spiral_step = config.get('spiral_step', 1)
         self.detections = None
         self.fruits = []
         self.detect_radius = 0.5
@@ -137,7 +138,7 @@ class Task4(Task1):
                 for _ in range(3):
                     self.go_straight(length)
                     self.turn_left_90deg()
-                length -= 1.0
+                length -= self.spiral_step
             self.send_speed_cmd(0, 0)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)

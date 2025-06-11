@@ -10,6 +10,7 @@
           "max_speed": 0.5,
           "side_length": 7.0,
           "turn_angle": 10,
+          "spiral_step": 1.5,
           "outputcsv": true
         }
       },
@@ -82,6 +83,12 @@
         "driver": "wswitch:WebPageSwitch",
         "out": ["status"],
         "init": {}
+      },
+      "localization": {
+        "driver": "odoimuloc:Localization",
+        "in": [],
+        "out": [],
+        "init": {}
       }
     },
     "links": [
@@ -92,7 +99,9 @@
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
-      ["wswitch.status", "app.status"]
+      ["wswitch.status", "app.status"],
+      ["platform.pose2d", "localization.odom"],
+      ["oak.orientation_list", "localization.orientation"]
     ]
   }
 }
