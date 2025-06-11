@@ -87,7 +87,7 @@ class Task3(Task2):
             center = cluster(self.fruits, radius)
             self.save_csv_if_enabled(center)
 
-    def drive_to_point(self, target, tolerance=0.05):
+    def drive_to_point(self, target, tolerance=0.2):
         tx, ty = target
         while True:
             self.update()
