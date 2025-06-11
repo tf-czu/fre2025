@@ -29,6 +29,8 @@ class Task4(Task1):
                 x1, y1, x2, y2 = det[2]
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
+                if y_center < 0.5:
+                    continue
                 beta = (0.5 - x_center) * math.radians(69)
                 alpha = self.pose_angle
                 mask = self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)] != 0
