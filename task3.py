@@ -26,8 +26,7 @@ class Task3(Task1):
         self.output_csv_enabled = config.get('outputcsv', True)
         self.start_angle = None
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
-
-        self.trees = [(2.3,1.7)]
+        self.trees = config.get('trees', [])
         self.radius = 1.20
         self.steering_angle_rad = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
 
