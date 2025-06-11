@@ -19,6 +19,21 @@ class Task4(Task1):
         self.detect_radius = 0.5
         self.output_csv_enabled = config.get('outputcsv', True)
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
+        self.dist_right = None
+        
+
+    def on_depth(self, data):
+        self.depth = data
+        
+        line = 400//2
+        line_end = 400//2 + 30             
+        mask = data[line:line_end, 480:640] != 0
+        if mask.max():
+            self.dist_right = data[line:line_end, 480:640][mask].min()
+        else:
+            self.dist_right = 0
+        if self.verbose:
+            print(self.time, self.dist_right)
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
@@ -58,13 +73,18 @@ class Task4(Task1):
                 if math.hypot(dx, dy) < dist:
                     diff = self.pose_angle - start_heading
 ##                    assert abs(diff) < math.radians(1), self.time
+                    direction = 0
                     if abs(diff) < math.radians(1):
-                        self.send_speed_cmd(self.max_speed, 0)
+                        direction = 0
                     else:
                         if diff > 0:
-                            self.send_speed_cmd(self.max_speed, -math.radians(self.turn_angle))
+                            direction = -math.radians(self.turn_angle)
                         else:
-                            self.send_speed_cmd(self.max_speed, math.radians(self.turn_angle))  
+                            direction = math.radians(self.turn_angle)
+                    if (self.dist_right is not None and self.dist_right < 1000
+                        and self.time.total_seconds() > 10):
+                        direction += math.radians(self.turn_angle) * 2 
+                    self.send_speed_cmd(self.max_speed, direction)
                 else:
                     self.send_speed_cmd(0, 0)
                     break
