@@ -37,8 +37,8 @@ class Task4(Task1):
                 if mask.shape[0] > 0 and mask.shape[1] > 0 and mask.max():
                     dist = np.median(self.depth[int(y1 * 400) : int(y2 * 400), int(x1 * 640) : int(x2 * 640)][mask])/1000
                     if dist < 2.0:
-                        x_fruit = self.pose_xy [0] + dist * math.cos(alpha + beta)
-                        y_fruit = self.pose_xy [1] + dist * math.sin(alpha + beta)
+                        x_fruit = self.pose_xy [0] + dist * math.cos(alpha + beta) + 1
+                        y_fruit = self.pose_xy [1] + dist * math.sin(alpha + beta) + 1
                         self.fruits.append ((x_fruit, y_fruit))
 ##                        print (self.time, x_fruit, y_fruit)
                         fruit.append(det)
