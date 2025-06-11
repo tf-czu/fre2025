@@ -2,10 +2,12 @@ import math
 import numpy as np
 import csv
 
+from collections import Counter
+
 from osgar.node import Node
 from osgar.bus import BusShutdownException
 from osgar.platforms.matty import FRONT_REAR_AXIS_DISTANCE
-from task1 import Task1
+from task2 import Task2
 
 def cluster(points, radius=0.3):
     s_points = []
@@ -18,7 +20,7 @@ def cluster(points, radius=0.3):
     return s_points
 
 
-class Task3(Task1):
+class Task3(Task2):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         self.detections = None
@@ -27,11 +29,17 @@ class Task3(Task1):
         self.start_angle = None
         self.save_csv_if_enabled([])  # vytvoř prázdný soubor
         self.trees = config.get('trees', [])
+        self.fruits_on_trees = []
+        self.tree_id = None
         self.radius = 1.20
         self.steering_angle_rad = 2 * math.atan((FRONT_REAR_AXIS_DISTANCE / 2) / self.radius)
+        self.honk_dic = {"apple": 1, "banana": 2, "lemon": 3, "orange": 4, "grape": 5}
 
     def on_detections(self, data):
         if self.time.total_seconds() < 5:
+            return
+
+        if self.tree_id is None:
             return
 
         camera_height = 0.25
@@ -47,10 +55,13 @@ class Task3(Task1):
         fruit = []
         for det in data:
             if self.verbose:
-                print("Detections: ", det)
+                pass
+                # print("Detections: ", det)
             fruit_type = det[0]
             if fruit_type in fruit_types:
                 x1, y1, x2, y2 = det[2]  # values between 0 and 1
+                if x1 < 0.15 or x2 > 0.85 or y1 < 0.1 or y2 > 0.9:
+                    continue
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
                 beta = (0.5 - x_center) * math.radians(69)  # 69 horizontal FOV
@@ -59,12 +70,15 @@ class Task3(Task1):
                 if not np.any(mask):
                     continue
                 dist = np.median(my_depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)][mask]) / 1000
-                x_fruit = self.pose_xy[0] + dist * math.sin(alpha + beta)
+                x_fruit = self.pose_xy[0] + dist * math.sin(alpha + beta) + 1  # corection for the robot initial pose
                 theta = camera_tilt + (0.5 - y_center) * vertical_fov
-                y_fruit = self.pose_xy[1] + ((dist / math.cos(theta))*math.cos(camera_tilt+theta+alpha))
+                y_fruit = self.pose_xy[1] + ((dist / math.cos(theta))*math.cos(camera_tilt+theta+alpha)) + 1  # corection for the robot initial pose
                 z_fruit = camera_height + (dist / math.cos(theta)) * math.sin(camera_tilt + theta)
-                self.fruits.append((fruit_type, x_fruit, y_fruit, z_fruit))
-                print(self.time, fruit_type, x_fruit, y_fruit, z_fruit)
+                self.fruits.append((fruit_type, x_fruit, y_fruit, z_fruit))  # old part
+
+                self.fruits_on_trees[self.tree_id]["fruits"].append([fruit_type, x_fruit, y_fruit])  # to be filtered later
+
+                # print(self.time, fruit_type, x_fruit, y_fruit, z_fruit)
                 fruit.append(det)
 
         self.detections = fruit
@@ -157,12 +171,40 @@ class Task3(Task1):
                 writer = csv.writer(file)
                 writer.writerow(['fruit_type', 'x', 'y', 'z'])
                 writer.writerows(centroid)
-            print(f"Uloženo do souboru: {filename}")
+            # print(f"Uloženo do souboru: {filename}")
+
+    def filter_output(self):
+        curennt_tree = self.fruits_on_trees[self.tree_id]
+        detections = [fruit_type[0] for fruit_type in curennt_tree["fruits"]]
+        print(detections)
+
+        counts = Counter(detections)
+        if self.verbose:
+            print(f"NUmber of fruit type: {counts}")
+        most_common_type = counts.most_common(1)[0][0]
+
+        self.honk_fruits(most_common_type)
+
+
+    def honk_fruits(self, fruit_type):
+        print(fruit_type)
+        nummber_of_honks = self.honk_dic[fruit_type]
+        for ii in range(nummber_of_honks):
+            self.send_sprayer(True, False, False)
+            self.wait(1)
+            self.send_sprayer(False, False, False)
+            self.wait(1)
 
     def run(self):
         try:
-            for tree in self.trees:
+            for ii, tree in enumerate(self.trees):
+                self.tree_id = ii
+                self.fruits_on_trees.append({"pose": tree, "fruits": []})
                 self.go_to_circle_and_drive(tree)
+                self.send_speed_cmd(0, 0)
+                self.filter_output()
+                # if self.verbose:
+                #    print("FRUITS: ", self.fruits_on_trees)
             self.send_speed_cmd(0, 0)
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
