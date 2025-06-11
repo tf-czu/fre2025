@@ -41,7 +41,7 @@ class Task4(Task1):
             return
         fruit = []
         for det in data:
-            if det [0] == "orange":
+            if det [0] in ["orange", "lemon"]:
                 x1, y1, x2, y2 = det[2]
                 x_center = (x1 + x2) / 2
                 y_center = (y1 + y2) / 2
