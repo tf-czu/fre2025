@@ -85,7 +85,7 @@ class Task3(Task2):
         if len(self.detections) > 0:
             radius = 0.2
             center = cluster(self.fruits, radius)
-            self.save_csv_if_enabled(center)
+            # self.save_csv_if_enabled(center)
 
     def drive_to_point(self, target, tolerance=0.05):
         tx, ty = target
@@ -175,25 +175,36 @@ class Task3(Task2):
 
     def filter_output(self):
         curennt_tree = self.fruits_on_trees[self.tree_id]
-        detections = [fruit_type[0] for fruit_type in curennt_tree["fruits"]]
-        print(detections)
-
-        counts = Counter(detections)
+        detections_types = [fruit_type[0] for fruit_type in curennt_tree["fruits"]]
+        # print(detections_types)
+        counts = Counter(detections_types)
         if self.verbose:
             print(f"NUmber of fruit type: {counts}")
         most_common_type = counts.most_common(1)[0][0]
 
         self.honk_fruits(most_common_type)
+        detections = [det[1:] for det in curennt_tree["fruits"] if det[0] == most_common_type]
+
+        # save_csv_if_enabled(centroid)
+        print("detection", detections)
+        if len(detections) > 10:
+            filtered_detections = [[most_common_type, *detections[3]], [most_common_type, *detections[-3]]]
+        else:
+            filtered_detections = [[most_common_type, *detections[-1]]]
+        self.save_csv_if_enabled(filtered_detections)
 
 
     def honk_fruits(self, fruit_type):
-        print(fruit_type)
+        print(fruit_type, ".....")
         nummber_of_honks = self.honk_dic[fruit_type]
         for ii in range(nummber_of_honks):
             self.send_sprayer(True, False, False)
             self.wait(1)
             self.send_sprayer(False, False, False)
             self.wait(1)
+
+    def export_csv2(self):
+        pass
 
     def run(self):
         try:
