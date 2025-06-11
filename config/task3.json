@@ -8,6 +8,7 @@
         "out": ["desired_steering"],
         "init": {
           "max_speed": 0.2,
+          "trees": [[2.0,2.2]],
 	  "outputcsv": true
         }
       },
@@ -34,6 +35,17 @@
           "speed": 115200
         }
       },
+
+      "serial_sprayer": {
+        "driver": "serial",
+        "in": ["raw"],
+        "out": ["raw"],
+        "init": {
+          "port": "/dev/sprayer",
+          "speed": 115200
+        }
+      },
+
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
@@ -83,16 +95,34 @@
          ]
             }
           }
+    },
+      "wswitch": {
+        "driver": "wswitch:WebPageSwitch",
+        "in": [],
+        "out": ["status"],
+        "init": {}
+      },
+
+      "localization": {
+        "driver": "odoimuloc:Localization",
+        "in": [],
+        "out": [],
+        "init": {}
       }
+
     },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
+      ["app.sprayer", "serial_sprayer.raw"],
       ["platform.pose2d", "app.pose2d"],
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
-      ["oak.detections", "app.detections"]
+      ["oak.detections", "app.detections"],
+      ["wswitch.status", "app.status"],
+      ["platform.pose2d", "localization.odom"],
+      ["oak.orientation_list", "localization.orientation"]
     ]
   }
 }
