@@ -7,8 +7,11 @@
         "in": ["pose2d", "detections"],
         "out": ["desired_steering"],
         "init": {
-          "max_speed": 0.2,
-          "side_length": 3.0
+          "max_speed": 0.5,
+          "side_length": 7.0,
+          "turn_angle": 10,
+          "spiral_step": 1.5,
+          "outputcsv": true
         }
       },
       "platform": {
@@ -37,7 +40,7 @@
       "oak": {
         "driver": "osgar.drivers.oak_camera:OakCamera",
         "init": {
-          "fps": 10,
+          "fps": 8,
           "is_color": true,
           "video_encoder": "h264",
           "is_depth": true,
