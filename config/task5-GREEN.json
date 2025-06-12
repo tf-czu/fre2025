@@ -49,7 +49,7 @@
         "init": {
           "blind": true,  
           "endpoint": "tcp://*:5555",
-          "outputs": [fruit_coordinate]
+          "outputs": ["fruit_coordinate"]
          }
         }
     },
