@@ -34,7 +34,7 @@ class Task5RED(Task1):
 
     def run(self):
         try:
-            self.go_straight(4)
+            self.go_straight(7)
 
         except BusShutdownException:
             self.send_speed_cmd(0, 0)
