@@ -47,7 +47,7 @@
      "from_red": {
         "driver": "osgar.drivers.pull:Pull",
         "init": {
-          "blind": true,  
+          "bind": true,  
           "endpoint": "tcp://*:5555",
           "outputs": ["fruit_coordinate"]
          }
