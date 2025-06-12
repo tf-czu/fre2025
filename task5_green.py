@@ -34,8 +34,11 @@ class Task5GREEN(Task2):
                 self.send_sprayer(True, True, True)
                 self.go_straight(1)
                 self.send_speed_cmd(0, 0)
+                self.send_sprayer(False, False, False)
             except BusShutdownException:
+
                 self.send_speed_cmd(0, 0)
+            self.send_sprayer(False, False, False)
 
 
 
