@@ -4,7 +4,7 @@ from osgar.node import Node
 from osgar.bus import BusShutdownException
 from task1 import Task1  # zdědí základní pohybové schopnosti
 
-class TaskRED(Task1):
+class Task5RED(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
         bus.register("fruit_coordinate")
