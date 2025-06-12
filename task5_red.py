@@ -10,7 +10,7 @@ class Task5RED(Task1):
         bus.register("fruit_coordinate")
 
     def on_detections(self, data):
-        self.publish("fruit_coordinate", [2, 0])
+##        self.publish("fruit_coordinate", [2, 0])
         if self.time.total_seconds() < 15:
             return
         for det in data:
