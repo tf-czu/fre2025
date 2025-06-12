@@ -22,7 +22,7 @@ class Task5GREEN(Task2):
 
         
     def wait_for_fruit_coordinate(self):
-        while self.fruit_coordinate is None
+        while self.fruit_coordinate is None:
             print('čekám na data')
             self.wait(0.5)
 
