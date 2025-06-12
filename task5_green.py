@@ -26,6 +26,18 @@ class Task5GREEN(Task3):
             print('čekám na data')
             self.wait(0.5)
 
+    def go_straight(self, dist):
+        print(self.time, 'go_straight')
+        self.end_of_row = self.pose_xy
+        while True:
+            if self.update() == 'pose2d':
+                if math.hypot(self.end_of_row[0] - self.pose_xy[0],
+                              self.end_of_row[1] - self.pose_xy[1]) < dist:
+                    self.send_speed_cmd(0.3, 0)
+                else:
+                    self.send_speed_cmd(0, 0)
+                    break 
+
             
     def run(self):
             try:
