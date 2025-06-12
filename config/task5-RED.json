@@ -60,14 +60,14 @@
             "stereo_left_right_check": true,
 
             "model": {
-                  "blob": "models/strawberries.blob"
+                  "blob": "models/strawberries2.blob"
             },
             "nn_config": {
                 "output_format": "detection",
                 "NN_family": "YOLO",
                 "input_size": "640x352",
                 "NN_specific_metadata": {
-                    "classes": 2,
+                    "classes": 1,
                     "coordinates": 4,
                     "anchors": [],
                     "anchor_masks": {},
@@ -77,7 +77,6 @@
             },
         "mappings": {
             "labels": [
-            "strawberries",
             "strawberry"
         ]
             }
