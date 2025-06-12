@@ -2,15 +2,16 @@
   "version": 2,
   "robot": {
     "modules": {
+
       "app": {
-        "driver": "task5:Task5",
+        "driver": "task5_red:Task5RED",
         "in": ["depth", "pose2d"],
         "out": ["desired_steering"],
         "init": {
-          "max_speed": 0.2,
-	  "outputcsv": true
+          "max_speed": 0.4
         }
       },
+
       "platform": {
         "driver": "osgar.platforms.matty:Matty",
         "in": ["esp_data"],
@@ -34,19 +35,11 @@
           "speed": 115200
         }
       },
-      "serial_sprayer": {
-        "driver": "serial",
-        "in": ["raw"],
-        "out": ["raw"],
-        "init": {
-          "port": "/dev/sprayer",
-          "speed": 115200
-        }
-      },
+
       "oak": {
           "driver": "osgar.drivers.oak_camera:OakCamera",
           "init": {
-            "fps": 10,
+            "fps": 8,
             "is_color": true,
             "video_encoder": "h264",
             "is_depth": true,
@@ -67,14 +60,14 @@
             "stereo_left_right_check": true,
 
             "model": {
-                  "blob": "models/strawberries.blob"
+                  "blob": "models/strawberries2.blob"
             },
             "nn_config": {
                 "output_format": "detection",
                 "NN_family": "YOLO",
                 "input_size": "640x352",
                 "NN_specific_metadata": {
-                    "classes": 2,
+                    "classes": 1,
                     "coordinates": 4,
                     "anchors": [],
                     "anchor_masks": {},
@@ -84,22 +77,35 @@
             },
         "mappings": {
             "labels": [
-            "strawberries",
             "strawberry"
         ]
             }
           }
+      },
+      "wswitch": {
+        "driver": "wswitch:WebPageSwitch",
+        "in": [],
+        "out": ["status"],
+        "init": {}
+      },
+      "to_green": {
+          "driver": "osgar.drivers.push:Push",
+          "init": {
+            "endpoint": "tcp://192.168.48.155:5555"
+          }
       }
+
     },
     "links": [
       ["app.desired_steering", "platform.desired_steering"],
-      ["app.sprayer", "serial_sprayer.raw"],
       ["platform.pose2d", "app.pose2d"],
       ["serial.raw", "platform.esp_data"],
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
-      ["oak.detections", "app.detections"]
+      ["oak.detections", "app.detections"],
+      ["wswitch.status", "app.status"],
+      ["app.fruit_coordinate", "to_green.fruit_coordinate"]
     ]
   }
 }
