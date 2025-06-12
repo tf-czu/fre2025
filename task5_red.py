@@ -16,8 +16,8 @@ class Task5RED(Task1):
         for det in data:
             if det[0] == "strawberry":
                 x1, y1, x2, y2 = det[2]
-                if x1 < 0.05 or x2 > 0.95 or y1 < 0.5 or y2 > 0.99:
-                    continue
+##                if x1 < 0.05 or x2 > 0.95 or y1 < 0.5 or y2 > 0.99:
+##                    continue
                 x_center = (x1 + x2) / 2
                 beta = (0.5 - x_center) * math.radians(69)
                 robot_heading = self.pose_angle
@@ -25,7 +25,7 @@ class Task5RED(Task1):
                 if not np.any(mask):
                     continue
                 dist = np.median(self.depth[int(y1 * 400): int(y2 * 400), int(x1 * 640): int(x2 * 640)][mask]) / 1000
-                if dist < 1.0:
+                if dist < 1.5:
                     x_fruit = self.pose_xy[0] + dist * math.cos(robot_heading + beta)
                     y_fruit = self.pose_xy[1] + dist * math.sin(robot_heading + beta)
 
