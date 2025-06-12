@@ -83,7 +83,12 @@
             }
           }
       },
-
+      "wswitch": {
+        "driver": "wswitch:WebPageSwitch",
+        "in": [],
+        "out": ["status"],
+        "init": {}
+      },
       "to_green": {
           "driver": "osgar.drivers.push:Push",
           "init": {
@@ -99,7 +104,8 @@
       ["platform.esp_data", "serial.raw"],
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
-      ["oak.detections", "app.detections"]
+      ["oak.detections", "app.detections"],
+      ["wswitch.status", "app.status"]
     ]
   }
 }
