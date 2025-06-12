@@ -7,10 +7,10 @@ import csv
 
 from osgar.node import Node
 from osgar.bus import BusShutdownException
-from task2 import Task2
+from task3 import Task3
 
 
-class Task5GREEN(Task2):
+class Task5GREEN(Task3):
 
     def __init__(self, config, bus):
         super().__init__(config, bus)
