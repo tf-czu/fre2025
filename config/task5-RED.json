@@ -105,7 +105,8 @@
       ["timer.tick", "platform.tick"],
       ["oak.depth", "app.depth"],
       ["oak.detections", "app.detections"],
-      ["wswitch.status", "app.status"]
+      ["wswitch.status", "app.status"],
+      ["app.fruit_coordinate", "to_green.fruit_coordinate"]
     ]
   }
 }

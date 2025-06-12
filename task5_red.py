@@ -7,7 +7,7 @@ from task1 import Task1  # zdědí základní pohybové schopnosti
 class TaskRED(Task1):
     def __init__(self, config, bus):
         super().__init__(config, bus)
-        bus.register('desired_steering', "fruit_coordinate")
+        bus.register("fruit_coordinate")
 
     def on_detections(self, data):
         if self.time.total_seconds() < 15:
@@ -29,8 +29,7 @@ class TaskRED(Task1):
                     y_fruit = self.pose_xy[1] + dist * math.sin(robot_heading + beta)
 
                     print("Fruit detected!! ", x_fruit, y_fruit)
-
-
+                    self.publish("fruit_coordinate", [x_fruit, y_fruit])
 
     def run(self):
         try:
