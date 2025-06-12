@@ -43,7 +43,7 @@ class Task5GREEN(Task3):
             try:
                 self.wait_for_fruit_coordinate()
                 self.drive_to_point(self.fruit_coordinate, 0.5)
-                self.send_sprayer(True, False, False)
+                self.send_sprayer(True, True, True)
                 self.go_straight(1)
                 self.send_speed_cmd(0, 0)
                 self.send_sprayer(False, False, False)
